@@ -612,7 +612,7 @@
                         if (item.text == "anstehende Störungen") {
                             displayStoerungen();  //todo: may be use only 1 modal to clean code
                         }
-                        if ((item.text == "Zähler anzeigen") && (item.BgColor == "slateBlue ")) {
+                        if ((item.text == "Zähler anzeigen") && (item.BgColor.trim() == "slateBlue" || item.BgColor == '#1F94B9' /*EKH Cyan*/)) {
                             displayZaehler();    //todo: may be use only 1 modal to clean code
                         }
 
@@ -1462,82 +1462,48 @@
                 }
                 else {
                     if (vco.isBool) {
-                        if (item.Symbol == "Heizkreis") {
-                            if (svalue.trim() == "1")
-                                Heizkreis(ctx, item.x, item.y, 1);
-                            else
-                                Heizkreis(ctx, item.x, item.y, 0);
+                        if (item.Symbol === `fpButton` || item.Symbol === `Heizkreis`) {
+                            const val = parseFloat(svalue.trim());
+                                fpButton(ctx, item.x, item.y, val);
                         }
 
                         if (item.Symbol == "Absenkung") {
-                            if (svalue.trim() == "1")
-                                Absenkung(ctx, item.x, item.y, 1, 1);
-                            else
-                                Absenkung(ctx, item.x, item.y, 1, 0);
+                            const val = parseFloat(svalue.trim());
+                                Absenkung(ctx, item.x, item.y, 1, val);
                         }
 
                         if (item.Symbol == "Feuer") {
-                            if (svalue.trim() == "1")
+                            const val = parseFloat(svalue.trim());
+                            if (val)
                                 feuer(ctx, item.x, item.y, 1);
                         }
 
-                        /*if (item.Symbol == "Abluftklappen") {
-                            if (svalue.trim() == "1") {
-                                ablufklappen(ctx, item.x, item.y, 1, 0);
-                            }
-                            else {
-                                ablufklappen(ctx, item.x, item.y, 1, 45);
-                            }
-                        }*/
-
                         if (item.Symbol == "BHKW") {
-                            if (svalue.trim() == "1")
-                                BHDreh(ctx, item.x, item.y, 1, TimerCounter * 30);
-                            else
-                                BHDreh(ctx, item.x, item.y, 1, 0);
+                            const val = parseFloat(svalue.trim());
+                            BHDreh(ctx, item.x, item.y, 1, TimerCounter * 30 * val);
                         }
 
                         if (item.Symbol == "Pumpe") {
-                            if (svalue.trim() == "1")
-                                pmpDreh2(ctx, item.x, item.y, 1, TimerCounter * 30);
-                            else
-                                pmpDreh2(ctx, item.x, item.y, 1, 0);
+                            const val = parseFloat(svalue.trim());
+                            pmpDreh2(ctx, item.x, item.y, 1, TimerCounter * 30 * val);
                         }
 
                         if (item.Symbol == "Luefter") {
-                            var angle = 30;
-                            if (svalue.trim() == "1")
-                                angle = TimerCounter * 30;
-
-                            if (item.SymbolFeature == "Links") {
-                                luefter(ctx, item.x, item.y, 1, angle, 0);
-                            }
-                            if (item.SymbolFeature == "Rechts") {
-                                luefter(ctx, item.x, item.y, 1, angle, 180);
-                            }
-                            if (item.SymbolFeature == "Oben") {
-                                luefter(ctx, item.x, item.y, 1, angle, 90);
-                            }
-                            if (item.SymbolFeature == "Unten") {
-                                luefter(ctx, item.x, item.y, 1, angle, 270);
-                            }
+                            const val = parseFloat(svalue.trim());
+                            const angle = (val) ? TimerCounter * 30 : 30;
+                            const rotation =    (item.SymbolFeature === "Rechts") ? 180 :
+                                                (item.SymbolFeature === "Oben") ? 90 :
+                                                (item.SymbolFeature === "Unten") ? 270 : 0;
+                            luefter(ctx, item.x, item.y, 1, angle, rotation);
                         }
 
                         if (item.Symbol == "Ventil") {
-                            if (svalue.trim() == "1") {
-
-                                if (item.SymbolFeature == "Links") {
-                                    ventil(ctx, item.x, item.y, 2, 180);
-                                }
-                                if (item.SymbolFeature == "Rechts") {
-                                    ventil(ctx, item.x, item.y, 2, 0);
-                                }
-                                if (item.SymbolFeature == "Oben") {
-                                    ventil(ctx, item.x, item.y, 2, 270);
-                                }
-                                if (item.SymbolFeature == "Unten") {
-                                    ventil(ctx, item.x, item.y, 2, 90);
-                                }
+                            const val = parseFloat(svalue.trim());
+                            if (val) {
+                                const rotation =    (item.SymbolFeature === "Rechts") ? 0 :
+                                                    (item.SymbolFeature === "Oben") ? 270 :
+                                                    (item.SymbolFeature === "Unten") ? 90 : 180;
+                                ventil(ctx, item.x, item.y, 2, rotation);
                             }
                         }
 
@@ -1585,6 +1551,13 @@
                                 }
                             }
                         }
+
+                        if (item.Symbol == "Schalter") {
+                            const val = parseFloat(svalue.trim());
+                            schalter(ctx, item.x, item.y, 1, val, item.SymbolFeature);
+                        }
+
+                        
 
                         hasSymbolsFlag = true;
                     }
@@ -2993,7 +2966,7 @@
 
 
         /*******************************************SymbolAnimation*************************************************************/
-        function Heizkreis(ctx, x, y, betrieb) {
+        function fpButton(ctx, x, y, betrieb) {
             var notches = 7,                      // num. of notches
                 radiusO = 12,                    // outer radius
                 radiusI = 9,                    // inner radius
@@ -3335,6 +3308,32 @@
             ctx.fill();
             ctx.restore();
         }
+
+        function schalter(ctx, x, y, scale, val, orientation = 'Links') {
+            const rotation =    (orientation === 'Oben') ? 90 :
+                                (orientation == 'Rechts') ? 180 :
+                                (orientation == 'Unten') ? 270 : 0;
+                        
+            ctx.save();
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.translate(x, y);
+            ctx.rotate(Math.PI / 180 * rotation);
+            ctx.scale(scale, scale);
+            ctx.beginPath();
+            //Kreis zeichnen
+            ctx.moveTo(-20, 0);
+            ctx.lineTo(-10, 0);
+            ctx.lineTo(13, (val) ? -3 : -15);
+
+            ctx.moveTo(10, -5);
+            ctx.lineTo(10, 0);
+            ctx.lineTo(20, 0);
+
+            ctx.stroke();
+            ctx.restore();
+        }
+
 
         /*****************************************Webservicecall****************************************************/
 

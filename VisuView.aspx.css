@@ -1,0 +1,673 @@
+﻿/* --- Eräuterungen CSS siehe VCO_Edit.aspx --- */
+/** {
+    box-sizing:content-box;
+}*/
+/*******************24016 JW: cursor appearance start*******************/
+[cursorStyle = "progress"] {
+    cursor: progress;
+}
+[cursorStyle = "wait"] {
+    cursor: wait;
+}
+[cursorStyle = "pointer"] {
+    cursor: pointer;
+}
+[cursorStyle = "grab"] {
+    cursor: grab;
+}
+[cursorStyle = "grabbing"] {
+    cursor: grabbing;
+}
+/*******************24016 JW: cursor appearance end*********************/
+
+#buttonGroupVisu {
+    position: absolute;
+    bottom: 5vh;
+    right: 1.5vh;
+    height: 200px;
+    width: 200px;
+    border: none;
+    transform: rotate(0deg);
+}
+
+#btnUpVisu {
+    background: url(/Images/Up.png);
+    left: 70px;
+}
+
+    #btnUpVisu:hover {
+        background: url(/Images/Up_hover.png);
+    }
+
+#btnDownVisu {
+    background: url(/Images/Down.png);
+    bottom: 0px;
+    left: 70px;
+}
+
+    #btnDownVisu:hover {
+        background: url(/Images/Down_hover.png);
+    }
+
+#btnLeftVisu {
+    background: url(/Images/Left.png);
+    top: 70px;
+    left: 0px;
+}
+
+    #btnLeftVisu:hover {
+        background: url(/Images/Left_hover.png);
+    }
+
+#btnRightVisu {
+    background: url(/Images/Right.png);
+    top: 70px;
+    right: 0px;
+}
+
+    #btnRightVisu:hover {
+        background: url(/Images/Right_hover.png);
+    }
+
+#btnEnterVisu {
+    background: url(/Images/Enter.png);
+    top: 70px;
+    left: 70px;
+}
+
+    #btnEnterVisu:hover {
+        background: url(/Images/Enter_hover.png);
+    }
+
+#outsideWrapper {
+    width: 1400px;
+    height: 630px;
+    /*border: 1px solid blue;*/
+    padding: 0px;
+    border-radius: 25px;
+    /*left:-10px;*/
+}
+
+.insideWrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: rgb(192, 192, 192);
+    border-radius: 25px;
+    left: -70px;
+}
+
+.coveredImage {
+    /*width: 100%;
+            height: 100%;*/
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: rgb(192, 192, 192);
+    border-radius: 25px;
+}
+
+.coveringCanvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 25px;
+    box-shadow: 10px 10px 5px #888888;
+    /*z-index: 0;*/
+}
+
+bdi {
+    font-family: Arial;
+}
+
+.right {
+    float: right;
+    background-color: lightgrey;
+}
+
+#cbDebug {
+    left: 60px;
+}
+
+.Logging {
+    width: 1000px;
+    height: 110px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 10px;
+    background-color: lightgrey;
+    border: 1px solid blue;
+}
+
+#tipCanvas {
+    background-color: LightGreen;
+    border: 1px solid blue;
+    position: absolute;
+    left: -2000px;
+    top: 100px;
+}
+
+.videoModal {
+    z-index: 99; /* Sit on top */
+    position: fixed; /* Stay in place */
+    left: 0px;
+    top: 0px;
+    display: none; /* Hidden by default */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+}
+
+.ImgBox {
+    /*margin: 5vh 5vh 0vh 40vh;*/
+    border: solid;
+    border-color: aqua;
+    border-radius: 10px;
+    max-width: 1024px;
+    max-height: 768px;
+    display: inline-flexbox;
+}
+
+/* The Modal (background) */
+.modalEK {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 10px;
+    top: 10px;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #F1F1F1; /*rgb(241, 241, 241); white gray*/
+    margin: 10px; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #C0C0C0; /*rgb(192, 192, 192);*/
+    border-radius: .5em;
+    width: 20%; /* Could be more or less, depending on screen size */
+}
+
+.modal-header {
+    /*font-size: 28px;*/
+    font-weight: bold;
+    padding: 2px 12px;
+    background-color: #C31D64; /*EKH rot*/
+    border-radius: .5em;
+    color: #F1F1F1; /*rgb(241, 241, 241); white gray*/
+    text-align: center;
+}
+
+#modalHeaderZaehler {
+    background-color: #1F94B9; /*EKH blau*/
+}
+
+/* The Close Button */
+.close {
+    color: #F1F1F1; /*rgb(241, 241, 241); white gray*/
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+    .close:hover,
+    .close:focus {
+        color: #C0C0C0; /*rgb(192, 192, 192);*/
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+
+.modal-body {
+    font-size: 16px;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+}
+
+.datepicker {
+    z-index: 10 !important;
+    width: auto;
+}
+
+#btnCopyClip {
+    width: 200px;
+    background-color: aquamarine;
+}
+
+
+h5 { /*Für Sektorüberschriften Faceplate*/
+    margin: 0px !important;
+    margin-top: 5px;
+}
+
+h6 { /*Für Sektorüberschriften Faceplate*/
+    margin: 0px !important;
+    margin-top: 2px;
+}
+
+
+.inputWertFaceplate {
+    width: 152px;
+    margin: 1px 0px;
+}
+
+/* Modal Pin/FP (background) */
+/* Modal Pin/FP (background) */
+.modalVisuBg {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    /*padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Add Animation */
+/*@-webkit-keyframes animatetop {
+	  from {top:-300px; opacity:0} 
+	  to {top:0; opacity:1}
+	}
+
+	@keyframes animatetop {
+	  from {top:-300px; opacity:0}
+	  to {top:0; opacity:1}
+	}*/
+
+
+/* Pin/FP Content */
+#Pin-content {
+    position: absolute;
+    top: 1vh;
+    right: 7vh;
+    width: 330px;
+}
+
+.modalVisuContent {
+    position: absolute;
+    top: 1vh;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 560px; /*550px*/
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    /*box-sizing: content-box;*/
+}
+
+#wochenKalenderImVisuContent {
+    width: auto;
+    background-color: #E0E0E0;
+}
+
+
+.modalVisuContent button:hover {
+    cursor: pointer;
+}
+
+.modalVisuContent button:disabled {
+    cursor: default;
+}
+
+
+.modalVisuHeader {
+    text-align: center;
+    padding: 2px 16px;
+    background-color: #1F94B9 /*#5cb85c*/;
+    color: #fefefe; /* white;*/
+}
+
+/* The Close Button */
+.close {
+    color: #fefefe; /* white;*/
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+    .close:hover,
+    .close:focus {
+        /*color: black;*/
+        color: #C31D64;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+
+#wochenKalenderImVisuBody {
+    background-color: #E0E0E0;
+}
+
+
+.modalVisuBody {
+    float: left;
+    padding: 2px 13px;
+ 
+}
+
+.fpSection {
+    float: inherit;
+}
+
+.divRtosVar {
+    float: inherit;
+    padding-top: 1vw;
+}
+
+.modalVisuBody .lblName,
+.modalVisuBody .lblNameFaceplate {
+    float: inherit;
+    width: 200px;
+    text-align: right;
+    margin-right: 5px;
+    padding-top: 3px;
+    white-space: pre-line;
+}
+
+.modalVisuBody .lblWert,
+.modalVisuBody .lblWertFaceplate,
+.modalVisuBody .lblUnit,
+.modalVisuBody .lblUnitFaceplate {
+    float: inherit;
+    width: 70px;
+    text-align: left;
+    margin-left: 5px;
+    padding-top: 3px;
+}
+
+.divInpWert {
+    float: inherit;
+    width: 205px;
+}
+
+.modalVisuBody input {
+    width: 150px; /*205px;*/
+    margin: 1px 0px;
+    background-color: white;
+    float: left;
+}
+
+    .modalVisuBody input:focus {
+        outline: none;
+    }
+
+.modalVisuBody [type="range"] {
+    -webkit-appearance: none;
+    /*background: linear-gradient(to right, #82CFD0 0%, #82CFD0 50%, #fff 50%, #fff 100%);*/
+    background: linear-gradient(to right, #1F94B9 0%, #C31D64 50%, #E0E0E0 50%, #E0E0E0 100%);
+    /*background: linear-gradient(to right, rgb(31, 148, 185) 0%, #C31D64 100%);*/
+    /*background: linear-gradient(to right, #1F94B9 0%, #3C92B8 10%, #578EB5 20%, #6F88B0 30%, #847FAA 40%, #9674A2 50%, #A66698 60%, #B2578D 70%, #BB4681 80%, #C13273 90%, #C31D64 100%);*/
+    border: solid 1px #C0C0C0;
+    border-radius: 12px;
+    height: 8px;
+    /*outline: none;*/
+    transition: background 150ms ease-in;
+}
+
+    /*Chrome/Chromium/FF Styling Schieber des Sliders*/
+    .modalVisuBody [type="range"]::-webkit-slider-thumb,
+    .modalVisuBody [type="range"]::-moz-range-thumb {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        border: 1px solid #E0E0E0;
+        height: 18px;
+        width: 18px;
+        border-radius: 9px;
+        background: #2F88B1; /*#2F88B1 #5070A0 #71598F #92417E #B3296D*/
+        cursor: pointer;
+        transition: background 150ms ease-in;
+        /*margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+        /*box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+    }
+
+    .modalVisuBody [type="range"].quarter::-webkit-slider-thumb,
+    .modalVisuBody [type="range"].quarter::-moz-range-thumb {
+        background: #5070A0;
+        transition: background 150ms ease-in;
+    }
+
+    .modalVisuBody [type="range"].half::-webkit-slider-thumb,
+    .modalVisuBody [type="range"].half::-moz-range-thumb {
+        background: #71598F;
+        transition: background 150ms ease-in;
+    }
+
+    .modalVisuBody [type="range"].threequarter::-webkit-slider-thumb,
+    .modalVisuBody [type="range"].threequarter::-moz-range-thumb {
+        background: #92417E;
+        transition: background 150ms ease-in;
+    }
+
+    .modalVisuBody [type="range"].full::-webkit-slider-thumb,
+    .modalVisuBody [type="range"].full::-moz-range-thumb {
+        background: #B3296D;
+        transition: background 150ms ease-in;
+    }
+
+    .modalVisuBody [type="range"].disabled::-webkit-slider-thumb,
+    .modalVisuBody [type="range"].disabled::-moz-range-thumb {
+        background: #C0C0C0;
+        /*transition: background 150ms ease-in;*/
+    }
+
+#fpBody .btnIncDec {
+    height: 24px;
+    width: 24px;
+    color: #fefefe;
+    background-color: #1F94B9; /*EKH blau*/
+    float: left;
+}
+
+    #fpBody .btnIncDec:disabled {
+        border-style: inset;
+        background-color: #E0E0E0;
+    }
+
+
+#btnWochenkalender,
+#calenderBtn {
+    height: 24px;
+    width: 205px;
+    /*background-color: #fefefe;*/
+    color: #fefefe;
+    background-color: #1F94B9; /*EKH blau*/
+}
+
+.modalVisuBody [type="button"] {
+    height: 50px;
+    width: 50px;
+    margin: 1px;
+    margin-left: 0px;
+    border-radius: 5px;
+    border-width: 3px;
+    /*background-color: white;*/
+}
+
+/*.btnStopp:disabled,
+				.btnAuto:disabled,
+				.btnAutoNA:disabled,
+				.btnHand:disabled,
+				.btnHandEin:disabled,
+				.btnHandAus:disabled,
+				.btnHandAuf:disabled,
+				.btnHandZu:disabled {
+					border-style: inset;
+					background-color:  #E0E0E0;
+				}*/
+
+.modalVisuBody .checked {
+    /*border: 3px inset;*/
+    background-color: #C0C0C0; /*#E0E0E0*/
+    border-style: inset;
+}
+
+/*.btnEinChecked,
+				.btnDesinfChecked {
+					border-style: inset;
+					background: #E0E0E0 no-repeat center/90% url(/Images/FaceplateBtns/On.png);
+				}
+				
+				.btnAusChecked {
+					border-style: inset;
+					background: #E0E0E0 no-repeat center/90% url(/Images/FaceplateBtns/Off.png);
+				}*/
+
+.btnStopp {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; /*90%*/
+    background-image: url(/Images/FaceplateBtns/Stopp.png);
+}
+
+.btnAuto {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/Auto.png);
+}
+
+.btnHand {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/Hand_inet.png);
+}
+
+.btnEin,
+.btnAuf {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/On.png);
+}
+
+.btnAus,
+.btnZu {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/Off.png);
+}
+
+.btnAutoNA {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/AutoNA.png);
+    border-style: outset;
+}
+
+.btnHandNA {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/Hand_inetNA.png);
+}
+
+.btnHandEinNA,
+.btnHandAufNA {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/OnNA.png);
+}
+
+.btnHandAusNA,
+.btnHandZuNA {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(/Images/FaceplateBtns/OffNA.png);
+}
+
+
+.modalVisuFooter {
+    float: left;
+    width: 100%;
+    padding: 2px 16px;
+    background-color: #1F94B9 /*#5cb85c*/;
+    color: #fefefe; /* white;*/
+}
+
+/*styling for button, slider within visurecording*/
+.btn.btnStartRecordPressed {
+    background-image: repeating-linear-gradient( 90deg, #ffffff, #33ff74 50% );
+    animation: slide 5s linear infinite;
+}
+
+@keyframes slide {
+    from {
+        background-position-x: 0;
+    }
+
+    to {
+        background-position-x: 200px;
+    }
+}
+
+#btnStopRecord:hover {
+    background-color: firebrick;
+}
+
+#btnStopRecord:active {
+    background-color: firebrick;
+}
+
+#sliderDate {
+    width: 300px;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+    #sliderDate:hover {
+        opacity: 1;
+    }
+
+    #sliderDate::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #04AA6D;
+        cursor: pointer;
+    }
+
+    #sliderDate::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #04AA6D;
+        cursor: pointer;
+    }
+/*end of styling for button, slider within visurecording*/
+
+
+#loggingWrapper {
+    height: 45px;
+    margin-left: 3px;
+    padding-right: 30px;
+    margin-top: 5px;
+    display: inline-block;
+}
