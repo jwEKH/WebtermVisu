@@ -1793,6 +1793,8 @@
                 opt = document.createElement('option');
                 opt.value = "rot/gruen"; opt.innerHTML = "rot/grün"; select.appendChild(opt);
                 opt = document.createElement('option');
+                opt.value = "gruen/unsichtbar"; opt.innerHTML = "grün/unsichtbar"; select.appendChild(opt);
+                opt = document.createElement('option');
                 opt.value = "unsichtbar/rot"; opt.innerHTML = "unsichtbar/rot"; select.appendChild(opt);
                 opt = document.createElement('option');
                 opt.value = "unsichtbar/rot blinkend"; opt.innerHTML = "unsichtbar/rot blinkend"; select.appendChild(opt);
@@ -2445,6 +2447,12 @@
 
                         <label style="padding-left: 20px; width: 110px">Hintergrund:</label>
                         <select id="selBgCol">
+                            <option value="transparent" selected="selected">transparent</option>
+                            <option value="#1F94B9">EKH blau</option>
+                            <option value="#C31D64">EKH rot</option>
+                            <option value="slateBlue ">slateBlue </option>
+                            <option value="#BEBEBE">bitmapbg</option>
+                            <option value="#E0E0E0">zaehlerbg</option>
                             <option value="white">weiß</option>
                             <option value="grey">grau</option>
                             <option value="schwarz">schwarz</option>
@@ -2459,18 +2467,12 @@
                             <option value="hotpink">hotpink</option>
                             <option value="lightgreen">lightgreen</option>
                             <option value="lightSeaGreen ">lightSeaGreen </option>
-                            <option value="slateBlue ">slateBlue </option>
                             <option value="yellowGreen">yellowGreen</option>
                             <option value="beige">beige</option>
                             <option value="lightblue">hellblau</option>
                             <option value="#ff9966">IPKamera</option>
-                            <option value="#E0E0E0">zaehlerbg</option>
-                            <option value="#BEBEBE">bitmapbg</option>
-                            <option value="#1F94B9">EKH blau</option>
-                            <option value="#C31D64">EKH rot</option>
                             <option value="#C0C0FF">sollwert</option>
                             <option value="#FFC0FF">Absenkung</option>
-                            <option value="transparent" selected="selected">transparent</option>
                         </select>
                         <br />
                     </div>
