@@ -3225,12 +3225,12 @@
             ctx.lineTo(0, -2);
             ctx.fill();
             //patch 22.11.2022: doppelte Pfeile
-            ctx.translate(11, 0);
-            ctx.fillRect(-1.5, -1, 1.5, 2);
-            ctx.moveTo(0, 2);
-            ctx.lineTo(2, 0);
-            ctx.lineTo(0, -2);
-            ctx.fill();
+            //ctx.translate(11, 0);
+            //ctx.fillRect(-1.5, -1, 1.5, 2);
+            //ctx.moveTo(0, 2);
+            //ctx.lineTo(2, 0);
+            //ctx.lineTo(0, -2);
+            //ctx.fill();
 
             ctx.restore();
         }
