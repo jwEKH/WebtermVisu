@@ -1,4 +1,4 @@
-﻿<%@ Page Title="VisuView" Language="C#" AutoEventWireup="true" CodeBehind="VisuView.aspx.cs" Inherits="WebAppJanStyle1.VisuView" %>
+<%@ Page Title="VisuView" Language="C#" AutoEventWireup="true" CodeBehind="VisuView.aspx.cs" Inherits="WebAppJanStyle1.VisuView" %>
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -314,17 +314,17 @@
             addClickableElementToList(visudata);
 
             addLinkButtonToList(visudata);
-            permissionVisuToRtos = getVisuSettingPermission(prj);
-            isAdmin = checkUserRole();
+            //permissionVisuToRtos = getVisuSettingPermission(prj);
+            //isAdmin = checkUserRole();
 
-            if (isAdmin) {
-                var btnStart = document.getElementById('btnStartRecord');
-                btnStart.style.display = 'inline-block';
-            }
+            //if (isAdmin) {
+            //    var btnStart = document.getElementById('btnStartRecord');
+            //    btnStart.style.display = 'inline-block';
+            //}
 
-            if (!permissionVisuToRtos) {
-                handleConfirmBtn(false);
-            }
+            //if (!permissionVisuToRtos) {
+            //    handleConfirmBtn(false);
+            //}
             try {
                 var k = getOnlineData(prj);
                 VisuDownload = $.parseJSON(k);
@@ -1857,18 +1857,22 @@
             else {
                 var sendErrors = '';
                 ClickableElement.forEach(function (el) {
-
                     var rtosVar = '"' + el.name + el.wert + el.oberGrenze + el.unterGrenze + el.nachKommaStellen + el.einheit + el.sectionIndicator + '"';
                     //console.log(rtosVar);
                     var url = 'http://' + IPE + '/JSONADD/PUT?v' + el.idx.toString().padStart(3, '0') + '=' + encodeURIComponent(rtosVar);
-                    var ans = sendDataWT(url);
+                    sendDataWTAsync(url);
                     //console.log(url);
-                    if (!ans.includes('OK')) sendErrors += ans;
+                      
+                    //if (!ans.includes('OK')) sendErrors += ans;
                 });
                 if (sendErrors != '') console.log(sendErrors);
             }
 
             if (btn.id.toUpperCase().includes('CONFIRM') || btn.id.toUpperCase().includes('SEND')) closeFaceplate();
+        }
+
+        function returnValueFromRTOS(msg) {
+            return msg;
         }
 
         //function sendDataToRtosNEW(event) {
@@ -1937,120 +1941,73 @@
         //	if (btn.id.toUpperCase().includes('CONFIRM') || btn.id.toUpperCase().includes('SEND')) closeFaceplate();
         //}
 
+
+
         function openFaceplate() {
-            /*SettingsFromVisualisierung*/
-            //handle for button click and clickable item, same philosophy as bitmap change of non linked element above
-            var adjustmentOption;
             var n = ClickableElementList.length;
             var match;
             var matchItem;
             for (var i = 0; i < n; i++) {
                 var item = ClickableElementList[i];
-
-                //check bitmap referenz to avoid interferenz between layer
                 var currentBitmapIndex = bmpIndex;
-
-                /********************* Heizkreise *************************/
                 if ((item.bitmapIndex == currentBitmapIndex) && (item.Bezeichnung == "HK" || item.Bezeichnung == "KES" || item.Bezeichnung == "BHK" || item.Bezeichnung == "WWL")) {
                     dx = mx - item.x;
                     dy = my - item.y;
                     if (dx * dx + dy * dy < item.radius * item.radius) {
                         match = true;
                         matchItem = item;
-
                         showElemementById('fpBg');
                         hideElemementById('fpContent');
                         showElemementById('visLoader');
-
-
-                        //search in the link list of clickable element base on unique id to find out the coresspondent link 
                         for (var j = 0; j < ClickableElementUrlList.length; j++) {
                             if (ClickableElementUrlList[j].indexOf(item.id) >= 0) {
                                 clickableElementUrl = ClickableElementUrlList[j];
                             }
                         }
-
-                        /*query the available adjustable params from RTOS in three steps
-                            1. tell the RTOS-Webserver, which elemente will be queried
-                            2. read RTOS-Vars until they are empty (Strings)
-                            3. read RTOS-Vars until identifiers are equal (Strings)
-                        */
                         sendDataWT(clickableElementUrl);
-                        //sendData(clickableElementUrl);
-                        //sleep(1000);
-                        var c = 0;
-                        do {
-                            adjustmentOption = JSON.parse(getData(readParameterOfClickableElementUrl));
-                            c++;
-                        } while (adjustmentOption.v070.trim() != '' && c < 50);
-                        c = 0;
-                        do {
-                            adjustmentOption = JSON.parse(getData(readParameterOfClickableElementUrl));
-                            c++;
-                        } while (adjustmentOption.v070.slice(0, 5) != clickableElementUrl.slice(-5) && c < 50);
-
-                        if (c < 50) {
-                            ClickableElement = [];
-                            //24 stellig für Name , 10 stellig für Werte, 2 Leerzeichen, 5 stellig für Obergrenze, 1 Leerzeichen, 5 stellig für Untergrenze, 1 Leerzeichen, 1 stellig für Nachkommastellen, 1 Leerzeichen, 5 stellig für Einheit
-                            for (var k = 70; k < 90; k++) {
-                                var rtosVariable = "v0" + k;
-                                var option = adjustmentOption[rtosVariable];
-
-                                /*if (option.trim() == '' || option.trim().toUpperCase() == 'X') {
-                                    //leere rtos-Variablen ignorieren
-                                }
-                                else {*/
-
-                                var newItem = new Object();
-
-                                newItem.idx = k + 20;
-                                newItem['name'] = '';
-                                newItem['wert'] = '';
-                                newItem["oberGrenze"] = '';
-                                newItem["unterGrenze"] = '';
-                                newItem["nachKommaStellen"] = '';
-                                newItem["einheit"] = '';
-                                newItem["sectionIndicator"] = option.substr(59, 1);
-
-                                /*					if (j == 70) item["sectionIndicator"] = 'H';*/
-                                switch (item["sectionIndicator"]) {
-                                    case 'H':
-                                        newItem['name'] = option.substr(0, 24);
-                                        newItem['wert'] = option.substr(24, 35);
-                                        break;
-                                    case 'S':
-                                        item['name'] = option.substr(0, 59);
-                                        break;
-                                    default:
-                                        newItem['name'] = option.substr(0, 24);
-                                        newItem['wert'] = option.substr(24, 12);
-                                        newItem["oberGrenze"] = option.substr(36, 6);
-                                        newItem["unterGrenze"] = option.substr(42, 6);
-                                        newItem["nachKommaStellen"] = option.substr(48, 2);
-                                        newItem["einheit"] = option.substr(50, 9);
-                                }
-                                /*if (item.name.includes('Betriebsart')) {
-                                    item.name = ('Handwert&#10' + item.name.trim()).padEnd(24);
-                                	
-                                    console.log(item.name);
-                                }*/
-                                ClickableElement.push(newItem);
-                                //}
-                            }
-
-                            //buildFaceplate();
-                            /*document.getElementById('btnKesselAuto').wert = 0;
-                            console.log(document.getElementById('btnKesselAuto'));//*/
-                            buildFaceplateNEW();
-                        }
-                        else {
-                            console.log('Error: openFaceplate');
-                        }
+                        sleep(600);
+                        getDataAsync(readParameterOfClickableElementUrl, testcallback);
                     }
                 }
             }
-
             if (match) showFaceplate(matchItem);
+        }
+
+        function testcallback(msg) {
+            ClickableElement = [];
+            adjustmentOption = JSON.parse(msg);
+            for (var k = 70; k < 90; k++) {
+                var rtosVariable = "v0" + k;
+                var option = adjustmentOption[rtosVariable];
+                var newItem = new Object();
+                newItem.idx = k + 20;
+                newItem['name'] = '';
+                newItem['wert'] = '';
+                newItem["oberGrenze"] = '';
+                newItem["unterGrenze"] = '';
+                newItem["nachKommaStellen"] = '';
+                newItem["einheit"] = '';
+                newItem["sectionIndicator"] = option.substr(59, 1);
+
+                switch (newItem["sectionIndicator"]) {
+                    case 'H':
+                        newItem['name'] = option.substr(0, 24);
+                        newItem['wert'] = option.substr(24, 35);
+                        break;
+                    case 'S':
+                        item['name'] = option.substr(0, 59);
+                        break;
+                    default:
+                        newItem['name'] = option.substr(0, 24);
+                        newItem['wert'] = option.substr(24, 12);
+                        newItem["oberGrenze"] = option.substr(36, 6);
+                        newItem["unterGrenze"] = option.substr(42, 6);
+                        newItem["nachKommaStellen"] = option.substr(48, 2);
+                        newItem["einheit"] = option.substr(50, 9);
+                }
+                ClickableElement.push(newItem);
+            }
+            buildFaceplateNEW();
         }
 
         function convertHexToRGBArray(hex) {
@@ -2549,7 +2506,6 @@
             var h4fpHeader = document.getElementById('h4FpHeader');
             var fpBody = document.getElementById('fpBody');
             var fpSection;
-
             ClickableElement.forEach(function (el) {
                 if (el.sectionIndicator.toUpperCase() == 'H') h4fpHeader.innerHTML = 'Einstellungen für ' + el.wert.trim();
 
@@ -2625,26 +2581,24 @@
             }
             else {
                 faceplateContent.style.left = '0px';
-                if (osk) osk.style.left = '0px';
+                osk.style.left = '0px';
             }
 
-            if (osk) {
-                if (faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + osk.offsetHeight < window.innerHeight) {
-                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
-                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
-                }
-                else if (faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + osk.offsetWidth < window.innerWidth) {
-                    osk.style.left = faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + 'px';
-                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
-                }
-                else {
-                    osk.style.left = faceplateContent.offsetLeft - osk.offsetWidth - OFFSET_FP_2_OSK + 'px';
-                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
-                    if (osk.offsetLeft < 0) {
-                        osk.style.left = '0px';
-                        faceplateContent.style.left = osk.offsetWidth + 'px';//faceplateContent.offsetLeft + Math.abs(osk.offsetLeft) + 'px';
-                        //osk.style.top = osk.offsetTop - OFFSET_FP_2_OSK + 'px';
-                    }
+            if (faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + osk.offsetHeight < window.innerHeight) {
+                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
+                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
+            }
+            else if (faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + osk.offsetWidth < window.innerWidth) {
+                osk.style.left = faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + 'px';
+                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
+            }
+            else {
+                osk.style.left = faceplateContent.offsetLeft - osk.offsetWidth - OFFSET_FP_2_OSK + 'px';
+                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
+                if (osk.offsetLeft < 0) {
+                    osk.style.left = '0px';
+                    faceplateContent.style.left = osk.offsetWidth + 'px';//faceplateContent.offsetLeft + Math.abs(osk.offsetLeft) + 'px';
+                    //osk.style.top = osk.offsetTop - OFFSET_FP_2_OSK + 'px';
                 }
             }
             hideElemementById('osk'); //Anordnungsberechnung abgeschlossen -> osk ausblenden!
@@ -3203,7 +3157,7 @@
             ctx.restore();
         }
 
-        /*//Zeichnen: Abluftklappe 
+        //Zeichnen: Abluftklappe 
         function ablufklappen(ctx, x, y, scale, rot) {
             ctx.save();
             ctx.strokeStyle = "black";
@@ -3231,7 +3185,7 @@
             }
             ctx.stroke();
             ctx.restore();
-        }*/
+        }
 
         function ventil(ctx, x, y, scale, rot) {
             // 6x6
@@ -3667,6 +3621,28 @@
             return res;
         }
 
+        function getDataAsync(Url, callback) {
+            var res = "";
+            $.ajax({
+                type: "POST",
+                url: "WebServiceEK.asmx/getJSONData",
+                data: "{Url: '" + Url + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: true, 
+                success: function (response) {
+                    res = response.d;
+                    callback(res);
+                    res = "";
+                },
+                complete: function (xhr, status) {
+                },
+                error: function (msg) {
+                }
+            });
+            //return res;
+        }
+
 
 
         function sendDataWT(Url) {
@@ -3682,6 +3658,29 @@
                     res = response.d;
                     //log("sendData ok");
                     //res = r;
+                },
+                complete: function (xhr, status) {
+                    //log("sendData complete");
+                },
+                error: function (msg) {
+                    //log("sendData fail: " + msg);
+                }
+            });
+            return res;
+        }
+
+        function sendDataWTAsync(Url, callback) {
+            var res;
+            $.ajax({
+                type: "POST",
+                url: "WebServiceEK.asmx/SendDataToRtos",
+                data: "{Url: '" + Url + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: true, // 
+                success: function (response) {
+                    res = response.d;
+                    callback(res);
                 },
                 complete: function (xhr, status) {
                     //log("sendData complete");
