@@ -1863,6 +1863,8 @@
                     Led(ctx, x, y, 1, "green");
                 if (SymbolFeature == "rot/gruen")
                     Led(ctx, x, y, 1, "red");
+                if (SymbolFeature == "gruen/unsichtbar")
+                    Led(ctx, x, y, 1, "lightgreen");
                 if (SymbolFeature == "unsichtbar/rot")
                     Led(ctx, x, y, 1, "orange");
                 if (SymbolFeature == "unsichtbar/rot blinkend")
