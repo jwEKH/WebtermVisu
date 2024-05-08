@@ -2500,36 +2500,36 @@
             //return divRtosVar;
         }
 
-        function buildFaceplateNEW() {
-            //Allgemeines
-            var fpBg = document.getElementById('fpBg');
-            var h4fpHeader = document.getElementById('h4FpHeader');
-            var fpBody = document.getElementById('fpBody');
-            var fpSection;
+        function buildFaceplateNEW() {            
+            let fpSection;
             ClickableElement.forEach(function (el) {
-                if (el.sectionIndicator.toUpperCase() == 'H') h4fpHeader.innerHTML = 'Einstellungen für ' + el.wert.trim();
-
-                var zwischenüberschrift;
-                if (el.name.includes('Betriebsart') || el.name.includes('Wochenkalender')) zwischenüberschrift = el.name.trim();
-                if (el.name.includes('NennVL')) zwischenüberschrift = 'HK-Temperaturparameter';
-                if (el.name.includes('20 &degC')) zwischenüberschrift = 'Pumpenkennlinie\n(nach Außentemperatur)';
-
-                if (zwischenüberschrift != undefined || fpSection == undefined) {
+                const h4fpHeader = document.getElementById('h4FpHeader');
+                if (el.sectionIndicator.toUpperCase() == 'H')
+                    h4fpHeader.innerHTML = `Einstellungen für ${el.wert.trim()}`;
+                
+                const sectionTitle =    (el.name.includes('Betriebsart') || el.name.includes('Wochenkalender')) ? el.name.trim() :
+                                        (el.name.includes('NennVL')) ? 'HK-Temperaturparameter' :
+                                        (el.name.includes('20 &degC')) ? 'Pumpenkennlinie\n(nach Außentemperatur)' : 
+                                        undefined;
+                
+                if (sectionTitle || !fpSection) {
                     //Beginn neue Section
                     //neue Section erzeugen & anhängen
                     fpSection = document.createElement('div');
+                    const fpBody = document.getElementById('fpBody');
                     fpBody.appendChild(fpSection);
                     fpSection.className = 'fpSection';
 
                     //Zwischenüberschrift erzeugen & anhängen
                     var h5fpSection = document.createElement('h5');
                     fpSection.appendChild(h5fpSection)
-                    if (zwischenüberschrift != undefined) h5fpSection.innerHTML = zwischenüberschrift;
+                    if (sectionTitle)
+                        h5fpSection.innerHTML = sectionTitle;
                 }
 
                 //FP-Zeile erzeugen
-                if (el.sectionIndicator.toUpperCase() != 'H' && el.wert.trim() != '') createControlGroup(fpSection, el);
-
+                if (el.sectionIndicator.toUpperCase() != 'H' && el.wert.trim() != '')
+                    createControlGroup(fpSection, el);
             });
         }
 
