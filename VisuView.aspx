@@ -2505,7 +2505,7 @@
             ClickableElement.forEach(function (el) {
                 const h4fpHeader = document.getElementById('h4FpHeader');
                 if (el.sectionIndicator.toUpperCase() == 'H')
-                    h4fpHeader.innerHTML = `Einstellungen für ${el.wert.trim()}`;
+                    h4fpHeader.innerHTML = `${el.wert.trim()} Parameter`;
                 
                 const sectionTitle =    (el.name.includes('Betriebsart') || el.name.includes('Wochenkalender')) ? el.name.trim() :
                                         (el.name.includes('NennVL')) ? 'HK-Temperaturparameter' :
