@@ -2436,8 +2436,10 @@
                         <br />
                         <label style="padding-left: 20px; width: 110px">Schriftfarbe:</label>
                         <select id="selColor">
-                            <option value="red">rot</option>
                             <option value="black" selected="selected">schwarz</option>
+                            <option value="#1F94B9">EKH blau</option>
+                            <option value="#C31D64">EKH rot</option>
+                            <option value="red">rot</option>
                             <option value="blue">blau</option>
                             <option value="yellow">gelb</option>
                             <option value="#00c000 ">Wirtschaft</option>

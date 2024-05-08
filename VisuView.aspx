@@ -3002,7 +3002,7 @@
             ctx.save();
             ctx.moveTo(0 - 10 * scale, 0);
             ctx.font = '10pt Arial';
-            ctx.fillStyle = 'blue';
+            ctx.fillStyle = `#1F94B9`; /*EKH Cyan*/ //'blue';
 
             ctx.translate(x, y);
 
@@ -3020,7 +3020,7 @@
             ctx.lineWidth = 1 * scale;
             ctx.translate(x, y);
             ctx.rotate(Math.PI / 180 * rotation);
-            ctx.strokeStyle = "steelblue";
+            ctx.strokeStyle = `#1F94B9`; /*EKH Cyan*/ //"steelblue";
             ctx.beginPath();
             ctx.arc(0, 0, 13 * scale, 0, Math.PI * 2, true);
 
