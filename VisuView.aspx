@@ -1,4 +1,4 @@
-<%@ Page Title="VisuView" Language="C#" AutoEventWireup="true" CodeBehind="VisuView.aspx.cs" Inherits="WebAppJanStyle1.VisuView" %>
+﻿<%@ Page Title="VisuView" Language="C#" AutoEventWireup="true" CodeBehind="VisuView.aspx.cs" Inherits="WebAppJanStyle1.VisuView" %>
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -2581,24 +2581,27 @@
             }
             else {
                 faceplateContent.style.left = '0px';
-                osk.style.left = '0px';
+                if (osk)
+                    osk.style.left = '0px';
             }
 
-            if (faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + osk.offsetHeight < window.innerHeight) {
-                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
-                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
-            }
-            else if (faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + osk.offsetWidth < window.innerWidth) {
-                osk.style.left = faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + 'px';
-                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
-            }
-            else {
-                osk.style.left = faceplateContent.offsetLeft - osk.offsetWidth - OFFSET_FP_2_OSK + 'px';
-                osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
-                if (osk.offsetLeft < 0) {
-                    osk.style.left = '0px';
-                    faceplateContent.style.left = osk.offsetWidth + 'px';//faceplateContent.offsetLeft + Math.abs(osk.offsetLeft) + 'px';
-                    //osk.style.top = osk.offsetTop - OFFSET_FP_2_OSK + 'px';
+            if (osk) { 
+                if (faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + osk.offsetHeight < window.innerHeight) {
+                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
+                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight + OFFSET_FP_2_OSK + 'px';
+                }
+                else if (faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + osk.offsetWidth < window.innerWidth) {
+                    osk.style.left = faceplateContent.offsetLeft + faceplateContent.offsetWidth + OFFSET_FP_2_OSK + 'px';
+                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
+                }
+                else {
+                    osk.style.left = faceplateContent.offsetLeft - osk.offsetWidth - OFFSET_FP_2_OSK + 'px';
+                    osk.style.top = faceplateContent.offsetTop + faceplateContent.offsetHeight - osk.offsetHeight + 'px';
+                    if (osk.offsetLeft < 0) {
+                        osk.style.left = '0px';
+                        faceplateContent.style.left = osk.offsetWidth + 'px';//faceplateContent.offsetLeft + Math.abs(osk.offsetLeft) + 'px';
+                        //osk.style.top = osk.offsetTop - OFFSET_FP_2_OSK + 'px';
+                    }
                 }
             }
             hideElemementById('osk'); //Anordnungsberechnung abgeschlossen -> osk ausblenden!
