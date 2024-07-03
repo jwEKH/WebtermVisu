@@ -754,7 +754,7 @@
             ctx.fillStyle = "black";
             ctx.lineWidth = 1;
             ctx.translate(x, y);
-            ctx.rotate(Math.PI / 180 * rot);
+            ctx.rotate(Math.PI / 180 * (rot + 180));
             ctx.scale(scale, scale);
             ctx.beginPath();
             ctx.fillRect(-1.5, -1, 1.5, 2);
@@ -1862,7 +1862,7 @@
             if (Symbol == "Luefter")
                 luefter(ctx, x, y, 1, 30, rotation);
             if (Symbol == "Ventil")
-                ventil(ctx, x, y, 1, rotation);
+                ventil(ctx, x, y, 2, rotation);
             if (Symbol == "VentilFilled")
                 ventilFilled(ctx, x, y, 1, rotation);
             if (Symbol == "Lueftungsklappe")

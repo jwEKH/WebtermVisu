@@ -1347,20 +1347,19 @@
                     item["id"] = visudata.DropList[i].VCOItem.iD.trim();
                     item["h"] = visudata.DropList[i].BgHeight;
                     item["bitmapIndex"] = visudata.DropList[i].bmpIndex;
-                    if (item["Bezeichnung"] == "HK") {
+                    item["radius"] = 18;
+                    /*if (item["Bezeichnung"] == "HK") {
                         item["radius"] = 18;
-
                     }
                     if (item["Bezeichnung"] == "KES") {
                         item["radius"] = 18;
                     }
-
                     if (item["Bezeichnung"] == "BHK") {
                         item["radius"] = 18;
                     }
                     if (item["Bezeichnung"] == "WWL") {
                         item["radius"] = 18;
-                    }
+                    }*/
                     createLinkForClickableElement(visudata.DropList[i].VCOItem.iD.trim());
                     ClickableElementList.push(item);
                 }
@@ -1487,32 +1486,26 @@
                             const val = parseFloat(svalue.trim());
                             pmpDreh2(ctx, item.x, item.y, 1, TimerCounter * 30 * val);
                         }
-
+                        
+                        const rotation =    (item.SymbolFeature === "Rechts") ? 180 :
+                                            (item.SymbolFeature === "Oben") ? 90 :
+                                            (item.SymbolFeature === "Unten") ? 270 : 0;
                         if (item.Symbol == "Luefter") {
                             const val = parseFloat(svalue.trim());
                             const angle = (val) ? TimerCounter * 30 : 30;
-                            const rotation =    (item.SymbolFeature === "Rechts") ? 180 :
-                                                (item.SymbolFeature === "Oben") ? 90 :
-                                                (item.SymbolFeature === "Unten") ? 270 : 0;
                             luefter(ctx, item.x, item.y, 1, angle, rotation);
                         }
 
                         if (item.Symbol === "Ventil") {
                             const val = parseFloat(svalue.trim());
                             if (val) {
-                                const rotation =    (item.SymbolFeature === "Rechts") ? 0 :
-                                                    (item.SymbolFeature === "Oben") ? 270 :
-                                                    (item.SymbolFeature === "Unten") ? 90 : 180;
                                 ventil(ctx, item.x, item.y, 2, rotation);
                             }
                         }
                         if (item.Symbol === "VentilFilled") {
                             const val = parseFloat(svalue.trim());
                             if (val) {
-                                const rotation =    (item.SymbolFeature === "Rechts") ? 0 :
-                                                    (item.SymbolFeature === "Oben") ? 270 :
-                                                    (item.SymbolFeature === "Unten") ? 90 : 180;
-                                ventilFilled(ctx, item.x, item.y, 2, rotation);
+                                ventilFilled(ctx, item.x, item.y, 1, rotation);
                             }
                         }
 
@@ -1959,7 +1952,7 @@
             for (var i = 0; i < n; i++) {
                 var item = ClickableElementList[i];
                 var currentBitmapIndex = bmpIndex;
-                if ((item.bitmapIndex == currentBitmapIndex) && (item.Bezeichnung == "HK" || item.Bezeichnung == "KES" || item.Bezeichnung == "BHK" || item.Bezeichnung == "WWL")) {
+                if ((item.bitmapIndex == currentBitmapIndex) && (item.Bezeichnung == "WP" || item.Bezeichnung == "HK" || item.Bezeichnung == "KES" || item.Bezeichnung == "BHK" || item.Bezeichnung == "WWL")) {
                     dx = mx - item.x;
                     dy = my - item.y;
                     if (dx * dx + dy * dy < item.radius * item.radius) {
@@ -3206,7 +3199,7 @@
             ctx.fillStyle = "black";
             ctx.lineWidth = 1;
             ctx.translate(x, y);
-            ctx.rotate(Math.PI / 180 * rot);
+            ctx.rotate(Math.PI / 180 * (rot + 180));
             ctx.scale(scale, scale);
             ctx.beginPath();
             ctx.fillRect(-1.5, -1, 1.5, 2);
