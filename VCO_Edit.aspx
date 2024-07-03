@@ -757,7 +757,32 @@
             ctx.rotate(Math.PI / 180 * rot);
             ctx.scale(scale, scale);
             ctx.beginPath();
+            ctx.fillRect(-1.5, -1, 1.5, 2);
+            ctx.moveTo(0, 2);
+            ctx.lineTo(2, 0);
+            ctx.lineTo(0, -2);
+            ctx.fill();
+            //patch 22.11.2022: doppelte Pfeile
+            ctx.translate(11, 0);
+            ctx.fillRect(-1.5, -1, 1.5, 2);
+            ctx.moveTo(0, 2);
+            ctx.lineTo(2, 0);
+            ctx.lineTo(0, -2);
+            ctx.fill();
 
+            ctx.restore();
+        }
+        function ventilFilled(ctx, x, y, scale, rot) {
+            // 6x6
+            ctx.save();
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = "black";
+            ctx.lineWidth = 1;
+            ctx.translate(x, y);
+            ctx.rotate(Math.PI / 180 * rot);
+            ctx.scale(scale, scale);
+            ctx.beginPath();
+            
             ctx.moveTo(-8, -8);
             ctx.lineTo(-8, 8);
             ctx.lineTo(8, 0);
@@ -765,19 +790,6 @@
 
             ctx.fill();
 
-            /*ctx.fillRect(-1.5, -1, 1.5, 2);
-            ctx.moveTo(0, 3);
-            ctx.lineTo(2, 0);
-            ctx.lineTo(0, -2);
-            ctx.fill();
-			
-			ctx.translate(11, 0);
-            ctx.fillRect(-1.5, -1, 1.5, 2);
-            ctx.moveTo(0, 2);
-            ctx.lineTo(2, 0);
-            ctx.lineTo(0, -2);
-            ctx.fill();*/
-			
             ctx.restore();
         }
 
@@ -1851,6 +1863,8 @@
                 luefter(ctx, x, y, 1, 30, rotation);
             if (Symbol == "Ventil")
                 ventil(ctx, x, y, 1, rotation);
+            if (Symbol == "VentilFilled")
+                ventilFilled(ctx, x, y, 1, rotation);
             if (Symbol == "Lueftungsklappe")
                 lueftungsklappe(ctx, x, y, 1, 100, rotation);
             if (Symbol == "Schalter")
@@ -2593,8 +2607,10 @@
             Led<br />
             <input id="Radio11" name="rgSymbols" type="radio" value="Freitext" onclick="HandleSymbolFeatures(value)" />
             Freitext<br />
+            <input id="Radio6" name="rgSymbols" type="radio" value="VentilFilled" onclick="HandleSymbolFeatures(value)" />
+            VentilFilled (neu)<br />
             <input id="Radio6" name="rgSymbols" type="radio" value="Ventil" onclick="HandleSymbolFeatures(value)" />
-            Ventil<br />
+            Ventil (alt; Pfeile)<br />
             <input id="Radio8" name="rgSymbols" type="radio" value="hkTooltip" onclick="HandleSymbolFeatures(value)" />
             HKTooltip<br />
             <input id="Radio7" name="rgSymbols" type="radio" value="Absenkung" onclick="HandleSymbolFeatures(value)" />

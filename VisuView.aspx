@@ -1497,13 +1497,22 @@
                             luefter(ctx, item.x, item.y, 1, angle, rotation);
                         }
 
-                        if (item.Symbol == "Ventil") {
+                        if (item.Symbol === "Ventil") {
                             const val = parseFloat(svalue.trim());
                             if (val) {
                                 const rotation =    (item.SymbolFeature === "Rechts") ? 0 :
                                                     (item.SymbolFeature === "Oben") ? 270 :
                                                     (item.SymbolFeature === "Unten") ? 90 : 180;
                                 ventil(ctx, item.x, item.y, 2, rotation);
+                            }
+                        }
+                        if (item.Symbol === "VentilFilled") {
+                            const val = parseFloat(svalue.trim());
+                            if (val) {
+                                const rotation =    (item.SymbolFeature === "Rechts") ? 0 :
+                                                    (item.SymbolFeature === "Oben") ? 270 :
+                                                    (item.SymbolFeature === "Unten") ? 90 : 180;
+                                ventilFilled(ctx, item.x, item.y, 2, rotation);
                             }
                         }
 
@@ -3211,6 +3220,26 @@
             ctx.moveTo(0, 2);
             ctx.lineTo(2, 0);
             ctx.lineTo(0, -2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+        function ventilFilled(ctx, x, y, scale, rot) {
+            // 6x6
+            ctx.save();
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = "black";
+            ctx.lineWidth = 1;
+            ctx.translate(x, y);
+            ctx.rotate(Math.PI / 180 * rot);
+            ctx.scale(scale, scale);
+            ctx.beginPath();
+            
+            ctx.moveTo(-8, -8);
+            ctx.lineTo(-8, 8);
+            ctx.lineTo(8, 0);
+            ctx.lineTo(-8, -8);
+
             ctx.fill();
 
             ctx.restore();
