@@ -31,6 +31,23 @@
 
     <%--<script src="Scripts/EK.JS"></script>--%>
     <script>
+        /********************* URL SETTINGS *********************/
+        const mpcJsonAddUrl = `http://172.16.0.102/JSONADD/`;
+        const mpcJsonGetUrl = `${mpcJsonAddUrl}GET?`;
+        const mpcJsonPutUrl = `${mpcJsonAddUrl}PUT?`;
+
+        const dataUrl = `${mpcJsonGetUrl}p=2&Var=all`;
+        const kalenderUrl = `${mpcJsonGetUrl}p=3&Var=all`;
+        const benachrichtigungsUrl = `${mpcJsonGetUrl}p=4&Var=sel&V064`;
+        const getSteuerungNameUrl = `${mpcJsonGetUrl}p=4&Var=sel&V065`;
+
+        const menuLink = `${mpcJsonPutUrl}V004=`;
+        const TastURL = `${mpcJsonPutUrl}V010=`;
+        const textInputUrl = `${mpcJsonPutUrl}V007=`;
+
+        const piDataUrl = `http://172.16.0.101/Data/`;
+        const uploadSkriptUrl = `${piDataUrl}upload.php`;
+        const HASH_FILE = '../SD_DATA/hash.txt';
 
         // URL Query Strings auswerten
         function getParameterByName(name) {
@@ -231,19 +248,19 @@
         var nIntervID; /*intervalID to stop streaming*/
 
         // url settings
-        var dataUrl = '';
+        //var dataUrl = '';
         var paramsUrl = '';
         var UpURL = '';
         var DownURL = '';
         var RightURL = '';
         var LeftURL = '';
         var EnterURL = '';
-        var kalenderUrl = '';
-        var TastURL = '';
-        var menuLink = '';
+        //var kalenderUrl = '';
+        //var TastURL = '';
+        //var menuLink = '';
         var menuTextFile = '';
         var visuTextFile = '';
-        var benachrichtigungsUrl = '';
+        //var benachrichtigungsUrl = '';
         var anmeldungBenachrichtigungsUrl = '';
         var abmeldungBenachrichtigungUrl;
 
@@ -422,10 +439,10 @@
 
         /******************* Create all needed Urls*******************************/
         function createAllLink(IPE) {
-            dataUrl = 'http://' + IPE + '/JSONADD/GET?p=2&Var=all';
+            //dataUrl = 'http://' + IPE + '/JSONADD/GET?p=2&Var=all';
             paramsUrl = 'http://' + IPE + '/JSONADD/GET?p=1&Var=all';
-            kalenderUrl = 'http://' + IPE + '/JSONADD/GET?p=3&Var=all';
-            benachrichtigungsUrl = 'http://' + IPE + '/JSONADD/GET?p=4&Var=sel&V064';
+            //kalenderUrl = 'http://' + IPE + '/JSONADD/GET?p=3&Var=all';
+            //benachrichtigungsUrl = 'http://' + IPE + '/JSONADD/GET?p=4&Var=sel&V064';
             anmeldungBenachrichtigungsUrl = 'http://' + IPE + '/JSONADD/PUT?V009=QA>' + aktuelleBenutzer;
             abmeldungBenachrichtigungUrl = 'http://' + IPE + '/JSONADD/PUT?V009=QA<' + aktuelleBenutzer;
             UpURL = 'http://' + IPE + '/JSONADD/PUT?V010=11';
@@ -433,8 +450,8 @@
             RightURL = 'http://' + IPE + '/JSONADD/PUT?V010=12';
             LeftURL = 'http://' + IPE + '/JSONADD/PUT?V010=8';
             EnterURL = 'http://' + IPE + '/JSONADD/PUT?V010=13';
-            TastURL = 'http://' + IPE + '/JSONADD/PUT?V010='
-            menuLink = 'http://' + IPE + '/JSONADD/PUT?V004=';
+            //TastURL = 'http://' + IPE + '/JSONADD/PUT?V010='
+            //menuLink = 'http://' + IPE + '/JSONADD/PUT?V004=';
             menuTextFile = 'http://' + IPE + '/DATA/menue.txt';
             visuTextFile = 'http://' + IPE + '/DATA/visdat.txt';
         }
@@ -627,13 +644,29 @@
             //handle for button click and clickable item, same philosophy as bitmap change of non linked element above
 
             if (!match) {
-                openFaceplate();
+                asyncOpenFaceplate();
             }
 
 
         }
 
+        function jumpToWochenKalender(target){
+            //1.Deaktivieren Autoreload Funktion beim Fernbedienung ? (überlegung)
+            clearInterval(fernbedienungAutoReload);
+            //2.Der Wert 'HK Wochenkalender' wird auf 1 geändert und zurückübertragen (gesamte 20 Zeile)
+            //Pearl-seitig wird das HK-Wochenkalender aufm Canvas gerendert.
+            //var sendError = sendValueFromVisuToRtos('openHKWochenKalender');
+            const divRtosVar = target.closest(`.divRtosVar`);
+            divRtosVar.wert = target.wert;
 
+            const sendError = sendDataToRtosNEW(target);
+            if (!sendError) {
+                showWochenKalenderVisu();
+                activeTabID = 'wochenKalenderImVisu';
+                wochenKalenderImVisuAutoReload = setInterval(refreshTextAreaWithoutParameterLocal, 50, wochenKalenderImVisuCanvasContext, wochenKalenderImVisuCanvas);
+            }
+        }
+        /*
         function jumpToWochenKalender(event) {
             //1.Deaktivieren Autoreload Funktion beim Fernbedienung ? (überlegung)
             //clearInterval(fernbedienungAutoReload);
@@ -647,6 +680,7 @@
                 wochenKalenderImVisuAutoReload = setInterval(wochenKalenderImVisu, 50);
             }
         }
+        */
 
         function wochenKalenderImVisu() {
             var data;
@@ -1715,11 +1749,12 @@
             modalIPKamera.style.display = 'none';
         }
 
-        //function hideElemementById(id) {
-        //    var selectedElement = document.getElementById(id);
-        //    selectedElement.style.display = "none";
-
-        //}
+        /*************Hilfsfunktionen------------------*/
+        function constrain(_in, _min, _max) {
+            const min = Math.min(parseFloat(_min), parseFloat(_max));
+            const max = Math.max(parseFloat(_min), parseFloat(_max));
+            return Math.max(Math.min(parseFloat(_in), max), min);
+        }
 
         function hideElemementById(id) {
             var selectedElement = document.getElementById(id);
@@ -1781,13 +1816,112 @@
             }
         }
 
+        /********************************async*************************************************/
+        async function fetchData(url) {
+            //console.log(url);
+            try {
+                const res = await fetch(`WebServiceEK.asmx/SendDataToRtos`, {
+                    method: `POST`,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: `{Url: '${url}'}`
+                });
+                //console.log(res);
+                const data = await res.json();
+                //console.log(data.d);
+                return JSON.parse(data.d);
+            }
+            catch(err) {
+                console.error(err);
+            }
+        }
+        function timeout(delay) {
+            return new Promise(resolve => setTimeout(resolve, delay));
+        }
+        async function asyncSleep(fn, delay, ...args) {
+            await timeout(delay);
+            return fn(...args);
+        }
+        
+        async function asyncOpenFaceplate() {
+            /*SettingsFromVisualisierung*/
+            //handle for button click and clickable item, same philosophy as bitmap change of non linked element above
+            //console.log(ClickableElementList);
+            
+            matchItem = ClickableElementList.find(el => {
+                const {x, y, radius, bitmapIndex} = el;
+                dx = mx - x;
+                dy = my - y;
+                return (bitmapIndex === bmpIndex && dx * dx + dy * dy < radius * radius);
+            });
+            //console.log(matchItem);
+            
+            if (matchItem) {
+                const body = document.querySelector(`body`);
+                body.setAttribute(`cursorStyle`, `progress`);
+                showElemementById('fpBg');
+                hideElemementById('fpContent');
+                //showElemementById('visLoader');
+                clickableElementUrl = ClickableElementUrlList.find(el => el.includes(matchItem.id));
+                try {
+                    const test = await fetchData(clickableElementUrl);
+                    const adjustmentOptions  = await asyncSleep(fetchData, 800, readParameterOfClickableElementUrl);
+                    //console.log(adjustmentOptions);
+                    //console.log(adjustmentOptions.v070.slice(0,5), clickableElementUrl.slice(-5))
+                    if (adjustmentOptions.v070.slice(0,5) === clickableElementUrl.slice(-5)) {
+                        ClickableElement = [];
+                        Object.entries(adjustmentOptions).forEach(([key, value]) => {
+                            const originalKeyNo = parseInt(key.match(/\d+/g));
+                            let item = {};
+                            item.idx = originalKeyNo + 20;
+                            item.sectionIndicator = value.substr(59, 1);
+                            
+                            switch (item.sectionIndicator) {
+                                case 'H':
+                                    item.name = value.substr(0, 24);
+                                    item.wert = value.substr(24,35)
+                                    break;
+                                case 'S':
+                                    item.name = value.substr(0, 59);
+                                    break;
+                                default:
+                                    item.name = value.substr(0, 24);
+                                    item.wert = value.substr(24,12);
+                                    item.oberGrenze = value.substr(36,6);
+                                    item.unterGrenze = value.substr(42,6);
+                                    item.nachKommaStellen = value.substr(48,2);
+                                    item.einheit = value.substr(50,9);
+                                }
+
+                                ClickableElement.push(item);
+                        });
+                        buildFaceplateNEW();
+                        showFaceplate(matchItem);
+                    }
+                    else {
+                        alert(`timeout`);
+                        hideElemementById('fpBg');
+                        hideElemementById('visLoader');
+                    }
+                    body.removeAttribute(`cursorStyle`);
+                }
+                catch(err) {
+                    console.error(err);
+                }
+            }
+        }
+
+
+
+
+        /********************************Bedienung*************************************************/
         function sleep(miliseconds) {
             var currentTime = new Date().getTime();
 
             while (currentTime + miliseconds >= new Date().getTime()) {
             }
         }
-        /********************************Bedienung*************************************************/
         function closeFaceplate() {
             var modal = document.getElementById("fpBg");
             modal.style.display = 'none';
@@ -1805,211 +1939,46 @@
             document.getElementById("btnFaceplateConfirm").disabled = disable;
         }
 
+        function sendDataToRtosEventHandler(ev) {
+            sendDataToRtosNEW(ev.target);
+        }
 
-        function sendDataToRtosNEW(event) {
-            if (event == null || event == undefined) return event;
-
-            var btn;
-            (typeof event) == 'string' ? btn = document.getElementById(event) : btn = event.target;
-            if (btn == null || btn == undefined) return btn;
-
-            var errorString = '';
+        function sendDataToRtosNEW(target) {	
+            const {id, idx} = target;
 
             //Nur RtosVar für Wochenkalender ändern (Aufforderung an Rtos Kalenderdaten schicken)
-            if (btn.id.toUpperCase().includes('CALENDER')) {
-                ClickableElement.forEach(function (el) {
-                    if (btn.idx == el.idx) el.wert = el.wert.replace('0', '1');
-                });
+            if (id === `calenderBtn` || id === `triggerBtnTagbetrieb`) {
+                const foundEl = ClickableElement.find(el => idx === el.idx);
+                //console.log(parseInt(foundEl.wert.trim()), parseInt(foundEl.wert));
+                const divRtosVar = target.closest(`.divRtosVar`);
+                //console.log(divRtosVar, divRtosVar.wert);
+                foundEl.wert = foundEl.wert.replace(parseInt(foundEl.wert).toString(), divRtosVar.wert);
             }
             else {
-                var rtosVars = Array.from(document.getElementsByClassName('divRtosVar'));
-                var changedRtosVars = [];
-                rtosVars.forEach(function (el) {
-                    if (el.wert != undefined) changedRtosVars.push(el);
-                });
-
-                changedRtosVars.forEach(function (changedEl) {
-                    ClickableElement.forEach(function (el) {
-                        if (changedEl.idx == el.idx) {
-                            var changedVal = parseFloat(changedEl.wert);
-                            //console.log(typeof changedEl.wert);
-                            if (isNaN(changedVal) || changedEl.wert.toString().trim() == '') {
-                                changedEl.style.color = '#C31D64';
-                                errorString += changedEl.firstElementChild.textContent + ': ' + 'ungültige Zahl!' + '\n';
-                            }
-                            else if (changedVal > parseFloat(el.oberGrenze)) {
-                                changedEl.style.color = '#C31D64';
-                                errorString += changedEl.firstElementChild.textContent + ': ' + 'max = ' + el.oberGrenze + '\n';
-                            }
-                            else if (changedVal < parseFloat(el.unterGrenze)) {
-                                changedEl.style.color = '#C31D64';
-                                errorString += changedEl.firstElementChild.textContent + ': ' + 'min = ' + el.unterGrenze + '\n';
-                            }
-                            else {
-                                el.wert = changedVal.toFixed(4).padStart(10).padEnd(12);
-                            }
-                        }
-                    });
+                const divRtosVar = Array.from(document.querySelectorAll(`.divRtosVar`));
+                const changedRtosVars = divRtosVar.filter(el => el.wert != undefined);
+                
+                changedRtosVars.forEach(changedEl => {
+                    const foundEl = ClickableElement.find(el => changedEl.idx == el.idx);
+                    foundEl.wert = parseFloat(changedEl.wert).toFixed(4).padStart(10).padEnd(12);
                 });
             }
-
-            if (errorString != '') {
-                alert(errorString);
-            }
-            else {
-                var sendErrors = '';
-                ClickableElement.forEach(function (el) {
-                    var rtosVar = '"' + el.name + el.wert + el.oberGrenze + el.unterGrenze + el.nachKommaStellen + el.einheit + el.sectionIndicator + '"';
-                    //console.log(rtosVar);
-                    var url = 'http://' + IPE + '/JSONADD/PUT?v' + el.idx.toString().padStart(3, '0') + '=' + encodeURIComponent(rtosVar);
-                    sendDataWTAsync(url);
-                    //console.log(url);
-                      
-                    //if (!ans.includes('OK')) sendErrors += ans;
-                });
-                if (sendErrors != '') console.log(sendErrors);
-            }
-
-            if (btn.id.toUpperCase().includes('CONFIRM') || btn.id.toUpperCase().includes('SEND')) closeFaceplate();
+            
+            ClickableElement.forEach(el => {
+                const rtosVar = `"${el.name}${el.wert}${el.oberGrenze}${el.unterGrenze}${el.nachKommaStellen}${el.einheit}${el.sectionIndicator}"`;
+                //console.log(rtosVar);
+                const url = `${mpcJsonPutUrl}v${el.idx.toString().padStart(3, '0')}=${encodeURIComponent(rtosVar)}`;
+                const ans = sendDataWT(url);
+                //console.log(url);
+                if (!ans.includes('OK'))
+                    console.error(ans);
+            }); 
+            
+            if (id.toUpperCase().includes('CONFIRM') || id.toUpperCase().includes('SEND')) closeFaceplate();
         }
 
         function returnValueFromRTOS(msg) {
             return msg;
-        }
-
-        //function sendDataToRtosNEW(event) {
-        //	if (event == null || event == undefined) return event;
-
-        //	var btn;
-        //	(typeof event) == 'string' ? btn = document.getElementById(event) : btn = event.target;
-        //	if (btn == null || btn == undefined) return btn;
-
-        //	var errorString = '';
-
-        //	//Nur RtosVar für Wochenkalender ändern (Aufforderung an Rtos Kalenderdaten schicken)
-        //	if (!permissionVisuToRtos) {
-        //		ClickableElement.forEach(function (el) {
-        //			if (btn.idx == el.idx) el.wert = el.wert.replace('0', btn.wert);
-        //		});
-        //	}
-        //	else {
-        //		var rtosVars = Array.from(document.getElementsByClassName('divRtosVar'));
-        //		var changedRtosVars = [];
-        //		rtosVars.forEach(function (el) {
-        //			if (el.wert != undefined) changedRtosVars.push(el);
-        //		});
-
-        //		changedRtosVars.forEach(function (changedEl) {
-        //			ClickableElement.forEach(function (el) {
-        //				if (changedEl.idx == el.idx) {
-        //					var changedVal = parseFloat(changedEl.wert);
-        //					//console.log(typeof changedEl.wert);
-        //					if (isNaN(changedVal) || changedEl.wert.toString().trim() == '') {
-        //						changedEl.style.color = '#C31D64';
-        //						errorString += changedEl.firstElementChild.textContent + ': ' + 'ungültige Zahl!' + '\n';
-        //					}
-        //					else if (changedVal > parseFloat(el.oberGrenze)) {
-        //						changedEl.style.color = '#C31D64';
-        //						errorString += changedEl.firstElementChild.textContent + ': ' + 'max = ' + el.oberGrenze + '\n';
-        //					}
-        //					else if (changedVal < parseFloat(el.unterGrenze)) {
-        //						changedEl.style.color = '#C31D64';
-        //						errorString += changedEl.firstElementChild.textContent + ': ' + 'min = ' + el.unterGrenze + '\n';
-        //					}
-        //					else {
-        //						el.wert = changedVal.toFixed(4).padStart(10).padEnd(12);
-        //					}
-        //				}
-        //			});
-        //		});
-        //	}
-
-        //	if (errorString != '') {
-        //		alert(errorString);
-        //	}
-        //	else {
-        //		var sendErrors = '';
-        //		ClickableElement.forEach(function (el) {
-        //			var rtosVar = '"' + el.name + el.wert + el.oberGrenze + el.unterGrenze + el.nachKommaStellen + el.einheit + el.sectionIndicator + '"';
-        //			link = 'http://' + IPE + '/JSONADD/PUT?v' + el.idx.toString().padStart(3, '0') + '=' + encodeURIComponent(rtosVar);
-        //			sendBackToRtosUrlList.push(link);
-        //		});
-
-        //	}
-        //	for (var j = 0; j < sendBackToRtosUrlList.length; j++) {
-        //		sendDataWT(sendBackToRtosUrlList[j]);
-        //	}
-
-        //	if (btn.id.toUpperCase().includes('CONFIRM') || btn.id.toUpperCase().includes('SEND')) closeFaceplate();
-        //}
-
-
-
-        function openFaceplate() {
-            var n = ClickableElementList.length;
-            var match;
-            var matchItem;
-            for (var i = 0; i < n; i++) {
-                var item = ClickableElementList[i];
-                var currentBitmapIndex = bmpIndex;
-                if ((item.bitmapIndex == currentBitmapIndex) && (item.Bezeichnung == "WP" || item.Bezeichnung == "HK" || item.Bezeichnung == "KES" || item.Bezeichnung == "BHK" || item.Bezeichnung == "WWL")) {
-                    dx = mx - item.x;
-                    dy = my - item.y;
-                    if (dx * dx + dy * dy < item.radius * item.radius) {
-                        match = true;
-                        matchItem = item;
-                        showElemementById('fpBg');
-                        hideElemementById('fpContent');
-                        showElemementById('visLoader');
-                        for (var j = 0; j < ClickableElementUrlList.length; j++) {
-                            if (ClickableElementUrlList[j].indexOf(item.id) >= 0) {
-                                clickableElementUrl = ClickableElementUrlList[j];
-                            }
-                        }
-                        sendDataWT(clickableElementUrl);
-                        sleep(600);
-                        getDataAsync(readParameterOfClickableElementUrl, testcallback);
-                    }
-                }
-            }
-            if (match) showFaceplate(matchItem);
-        }
-
-        function testcallback(msg) {
-            ClickableElement = [];
-            adjustmentOption = JSON.parse(msg);
-            for (var k = 70; k < 90; k++) {
-                var rtosVariable = "v0" + k;
-                var option = adjustmentOption[rtosVariable];
-                var newItem = new Object();
-                newItem.idx = k + 20;
-                newItem['name'] = '';
-                newItem['wert'] = '';
-                newItem["oberGrenze"] = '';
-                newItem["unterGrenze"] = '';
-                newItem["nachKommaStellen"] = '';
-                newItem["einheit"] = '';
-                newItem["sectionIndicator"] = option.substr(59, 1);
-
-                switch (newItem["sectionIndicator"]) {
-                    case 'H':
-                        newItem['name'] = option.substr(0, 24);
-                        newItem['wert'] = option.substr(24, 35);
-                        break;
-                    case 'S':
-                        item['name'] = option.substr(0, 59);
-                        break;
-                    default:
-                        newItem['name'] = option.substr(0, 24);
-                        newItem['wert'] = option.substr(24, 12);
-                        newItem["oberGrenze"] = option.substr(36, 6);
-                        newItem["unterGrenze"] = option.substr(42, 6);
-                        newItem["nachKommaStellen"] = option.substr(48, 2);
-                        newItem["einheit"] = option.substr(50, 9);
-                }
-                ClickableElement.push(newItem);
-            }
-            buildFaceplateNEW();
         }
 
         function convertHexToRGBArray(hex) {
@@ -2064,161 +2033,121 @@
             return retColorHex;
         }
 
-        function sliderStyling(event) {
-            if (event == null || event == undefined) return event;
-            //console.log(event);
-            var slider = event.target;
-            var percentVal = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-            var minColor, currentColor;
-            //console.log(slider);
-            if (slider.disabled) {
-                minColor = '#C0C0C0';
-                currentColor = minColor;
-            }
-            else {
-                minColor = slider.minColor;
-                currentColor = calcColor(percentVal, slider.minColor, slider.maxColor);
-
-                if (slider.maxColor == '#C31D64') {
-                    slider.classList.remove('quarter');
-                    slider.classList.remove('half');
-                    slider.classList.remove('threequarter');
-                    slider.classList.remove('full');
+        function sliderStyling(target) {
+            const {value, min, max, disabled, minColor, maxColor, classList} = target;
+            const percentVal = (value - min) / (max - min) * 100;
+            const _minColor = (disabled) ? '#C0C0C0' : minColor;
+            const currentColor = (disabled) ? '#C0C0C0' : calcColor(percentVal, minColor, maxColor);
+            //console.log(target);
+            if (!disabled) {
+                if (maxColor == '#C31D64') {
+                    classList.remove('quarter', 'half', 'threequarter', 'full');
                     if (percentVal > 80) {
-                        slider.classList.add('full');
+                        classList.add('full');
                     } else if (percentVal > 60) {
-                        slider.classList.add('threequarter');
+                        classList.add('threequarter');
                     } else if (percentVal > 40) {
-                        slider.classList.add('half');
+                        classList.add('half');
                     } else if (percentVal > 20) {
-                        slider.classList.add('quarter');
+                        classList.add('quarter');
                     }
-                }
+                }		
             }
-
+            
             //console.log(currentColor);
-            slider.style.background = 'linear-gradient(to right, ' + minColor + ' 0%, ' + currentColor + ' ' + percentVal + '%, #E0E0E0 ' + percentVal + '%, #E0E0E0 100%)';
-
+            target.style.background = `linear-gradient(to right, ${_minColor} 0%, ${currentColor} ${percentVal}%, #E0E0E0 ${percentVal}%, #E0E0E0 100%)`;
+            
             //convertHexToRGBArray('#1F94B9');
             //calcColor(100);
         }
 
-        function sliderHandler(event) {	//sliderHandler
-            if (event == null || event == undefined) return event;
+        function sliderHandler(target) {	//sliderHandler
+            //console.log(target.value);
+            sliderStyling(target);
+            const {min, max} = target;
 
-            sliderStyling(event);
-            var slider;
-            (typeof event) == 'string' ? slider = document.getElementById(event) : slider = event.target;
-            if (slider == null || slider == undefined) return slider;
-
-            var divRtosVar = document.getElementById('v' + slider.idx.toString().padStart(3, '0'));
-            var btnHand = document.getElementById('btnHand' + slider.idx);
-
-            //Due to wrapping the slider in a container-div (.divInpWert), the aimed target (.lblUnit) is
-            //actually the parentsNextSibling...
-            var parentsNextSibling = slider.parentElement.nextElementSibling;
-            //return parentsNextSibling if null || undefined
-            if (parentsNextSibling == null || parentsNextSibling == undefined) return parentsNextSibling;
-
-            if (slider.unit != parentsNextSibling.unit) console.log('updateNextSiblingOfSlider: Diskrepanz "unit"');
-            if (slider.unit != parentsNextSibling.unit) return null;
-            //console.log(slider, parentsNextSibling);
-
-            if (slider.max - slider.min == 101 && slider.value <= 0) slider.value = -1;
-            slider.wert = slider.value;
-            divRtosVar.wert = slider.wert;
-            if (btnHand != null) btnHand.wert = slider.wert;
-            parentsNextSibling.wert = slider.wert;
-            parentsNextSibling.value = slider.value;
-
-            //slider.min <= 0 
-            (slider.max - slider.min == 101 && slider.value <= 0) ? parentsNextSibling.innerHTML = 'Zu' : parentsNextSibling.innerHTML = parentsNextSibling.value + ' ' + parentsNextSibling.unit;
-
-            return parentsNextSibling;
+            const divRtosVar = target.closest(`.divRtosVar`);
+            const lblUnit = divRtosVar.querySelector(`.lblUnit`);
+            
+            if (max - min == 101 && target.value <= 0)
+                target.value = -1;
+            target.wert = target.value;
+            divRtosVar.wert = target.wert;
+            const btnHand = divRtosVar.querySelector(`.btnHand`);
+            if (btnHand)
+                btnHand.wert = target.wert;
+            lblUnit.wert = target.wert;
+            lblUnit.value = target.value;
+            
+            //min <= 0 
+            lblUnit.innerHTML = (max - min == 101 && target.value <= 0) ? 'Zu' : `${lblUnit.value} ${lblUnit.unit}`;
+            
+            return lblUnit;
         }
 
-        function decrementSliderValue(event) {
-            if (event == null || event == undefined) return event;
-
-            var slider = event.target.nextElementSibling;
-            //console.log(slider);
-            slider.value -= slider.step;
-            var pseudoEvent = {};
-            pseudoEvent.target = slider;
-            sliderHandler(pseudoEvent);
-        }
-
-        function incrementSliderValue(event) {
-            if (event == null || event == undefined) return event;
-
-            //console.log(event.target);
-            var slider = event.target.previousElementSibling;
-            slider.value = parseFloat(slider.value) + parseFloat(slider.step);
-            //Sonderfall Analogmischer
-            if (slider.unit == '%' && slider.value == 0) slider.value = parseFloat(slider.value) + parseFloat(slider.step);
-            //console.log(slider.value);
-            var pseudoEvent = {};
-            pseudoEvent.target = slider;
-            sliderHandler(pseudoEvent);
-        }
-
-        function radioBtnByNameNEW(event) {
-            if (event == null || event == undefined) return event;
-
-            var btn;
-            (typeof event) == 'string' ? btn = document.getElementById(event) : btn = event.target;
-            if (btn == null || btn == undefined) return btn;
-
-            var divRtosVar = document.getElementById('v' + btn.idx.toString().padStart(3, '0'));
-            if (btn.wert.toString() == '') {
-                var slider = document.getElementById('inpWert' + btn.idx);
-                btn.wert = slider.wert;
+        function sliderAdjustValueBtnEventHandler(ev) {
+            const {type, target} = ev;
+            //console.log(ev.type);
+            if (type.match(/(touchstart)/))
+                ev.preventDefault();
+            if (!target.timerMousePressed && type.match(/(mousedown|touchstart)/)) {
+                    target.timerMousePressed = setInterval(sliderAdjustValueBtnHandler, 100, target);
             }
-            divRtosVar.wert = btn.wert;
+            else if (target.timerMousePressed){
+                clearInterval(target.timerMousePressed);
+                target.timerMousePressed = undefined;
+            }
+        }
 
+        function sliderAdjustValueBtnHandler(target) {
+            const slider = Array.from(target.parentElement.childNodes).find(el => (el.type === `range`));
+            
+            //const slider = (target.classList.contains(`btnDec`)) ? target.nextElementSibling : target.previousElementSibling;
+            //console.log(slider, target.wert);
+            slider.value = parseFloat(slider.value) + parseFloat(target.wert);
+            //Sonderfall Analogmischer
+            if (slider.unit == '%' && slider.value == 0)
+                slider.value = parseFloat(slider.value) + parseFloat(slider.step);
+            sliderHandler(slider);	
+        }
+
+        function radioBtnByNameNEW(target) {
+            //console.log(target);
+            const {idx, name, id} = target;		
+            
             //var changedBtns = [];
-            var relatedBtns = document.getElementsByName(btn.name);
-            relatedBtns.forEach(function (el) {
-                //console.log(el);
-                if (el.id == btn.id) {
-                    if (!el.className.includes('checked')) {
-                        //changedBtns.push(el);
-                        el.className += " checked";
-                    }
-                    else {
-                        if (el.className.includes('uncheckable')) el.className = el.className.replace("checked", "").trim();
-                    }
-                }
-                else {
-                    //if (el.className.includes('checked')) changedBtns.push(el);
-                    el.className = el.className.replace("checked", "").trim();
-                }
-            });
-
-            return btn; //return event;? return changedBtns;???
+            const relatedBtns = document.getElementsByName(name);
+            const btnToggleForceVal = (target.classList.contains(`uncheckable`)) ? undefined : true;
+            relatedBtns.forEach(el => el.classList.toggle(`checked`, (el === target) ? btnToggleForceVal : false));
+            
+            if (target.wert.toString() == '') {
+                const slider = document.querySelector(`#inpWert${idx}`);
+                target.wert = slider.wert;
+            }
+            //const divRtosVar = document.querySelector(`#v${idx.toString().padStart(3,'0')}`);
+            const divRtosVar = target.closest(`.divRtosVar`);
+            if (id === `triggerBtnTagbetrieb`) {
+                divRtosVar.wert = (target.classList.contains(`checked`)) ? 1 : 0;
+            }
+            else {
+                divRtosVar.wert = target.wert;
+            }
+            if (id === `triggerBtnTagbetrieb`) sendDataToRtosNEW(target);
         }
 
-        function toggleSliderAbilityByBtnHandNEW(event) {
-            var btn = event.target;
-            if (btn == null || btn == undefined) return event;
-
-            var enabled = btn.className.toUpperCase().includes('HAND');
-
-            btn.parentElement.childNodes.forEach(function (el) {
-                if (el.type == 'range') {
-                    el.disabled = !enabled;
-                    //console.log(el.className);
-                    (enabled) ? el.classList.remove('disabled') : el.classList.add('disabled');
-                    //console.log(el.className);
-                    var pseudoEvent = {};
-                    pseudoEvent.target = el;
-                    sliderStyling(pseudoEvent);
+        function toggleSliderAbilityByBtnHandNEW(target) {	
+            const enabled = target.className.toUpperCase().includes('HAND');
+            //console.log(target.parentElement.childNodes);
+            const relevantSiblings = Array.from(target.parentElement.childNodes).filter(el => (el.type === `range` || el.classList.contains(`btnIncDec`)));
+            relevantSiblings.forEach(el => {
+                el.disabled = !enabled;
+                if (el.type === `range`) {
+                    el.classList.toggle(`disabled`, !enabled);
+                    sliderStyling(el);
                 }
-                if (el.className.includes('btnIncDec')) el.disabled = !enabled;
             });
-
         }
-
+        
         function updateLblUnit(event) {
             var btn = event.target;
             if (btn == null || btn == undefined) return event;
@@ -2234,69 +2163,48 @@
             }
         }
 
-        function controlGroupBtnHandlerNEW(event) {
-            if (event == null || event == undefined) return event;
-            //console.log(event);
-            var btn;
-            (typeof event) == 'string' ? btn = document.getElementById(event) : btn = event.target;
-
-            var returnedBtn = radioBtnByNameNEW(event); //returned event??!
-            if (btn != returnedBtn) console.log('fpBtnHandler: btn != returnedBtn');
-            if (btn != returnedBtn) return btn; //return event;???	
-            //if (btn.className.includes('Hand')) disableSliderNEW();
-            toggleSliderAbilityByBtnHandNEW(event);
-            updateLblUnit(event);
+        function controlGroupBtnHandlerNEW(target) {
+            radioBtnByNameNEW(target);
+            toggleSliderAbilityByBtnHandNEW(target);
+            updateLblUnit(target);
             //console.log(btn);
         }
-
-        function createControlGroup(fpSection, el) {
+                
+        function createControlGroup(el) {
+            const {idx, name, wert, oberGrenze, unterGrenze, nachKommaStellen, einheit} = el;
             //div mit ID=rtosVariable erzeugen & anhängen (return object)
-            var divRtosVar = document.createElement('div');
-            fpSection.appendChild(divRtosVar);
-            divRtosVar.id = 'v' + el.idx.toString().padStart(3, '0');
+            const divRtosVar = document.createElement('div');
+            divRtosVar.id = `v${idx.toString().padStart(3,'0')}`;
             divRtosVar.className = 'divRtosVar';
-            divRtosVar.idx = el.idx;
-
+            divRtosVar.idx = idx;
+            
             //Namenslabel erzeugen & anhängen
-            var lblName = document.createElement('label');
+            const lblName = document.createElement('label');				
             divRtosVar.appendChild(lblName);
             lblName.className = 'lblName';
-            lblName.innerHTML = el.name.trim();
-
+            lblName.innerHTML = name.trim();
+            
             //Inputelemente (btns, slider, number, etc.) erzeugen & anhängen
-            var divInpWert = document.createElement('div');
+            const divInpWert = document.createElement('div');
             divRtosVar.appendChild(divInpWert);
             divInpWert.className = 'divInpWert';
-            divInpWert.id = divInpWert.className + el.idx;
-            divInpWert.idx = el.idx;
-
+            divInpWert.id = divInpWert.className + idx;
+            divInpWert.idx = idx;
+            
             //zu erzeugende Elemente auf Basis der Range ermitteln:
-            var range = (parseFloat(el.oberGrenze.trim()) - parseFloat(el.unterGrenze.trim()) + 1) * Math.pow(10, el.nachKommaStellen);
-
+            const range = (parseFloat(oberGrenze.trim()) - parseFloat(unterGrenze.trim()) + 1) * Math.pow(10, nachKommaStellen);
+            
             //Zeilenumbruch vor lblName anfügen, um Textausrichtung mittig zu Btns (außer Kalender) zu setzen
-            if (range <= 4 && !lblName.innerHTML.includes('kalender')) lblName.innerHTML = '\n' + lblName.innerHTML;
-
-            //-Button vor Slider erzeugen
-            if (range > 4) {
-                var btnIncDec = document.createElement('input');
-                divInpWert.appendChild(btnIncDec);
-                btnIncDec.type = 'button';
-                btnIncDec.className = 'btnIncDec btnDec';
-                var btnVal = Math.pow(10, -el.nachKommaStellen);
-                if (btnVal < 1) btnVal = btnVal.toString().slice(1);
-                btnIncDec.value = '-';// + btnVal;
-                btnIncDec.onclick = decrementSliderValue;
-            }
-
-            var inpWert = document.createElement('input');
+            if (range <= 4 && !name.match(/(kalender|tagbetrieb)/gi)) lblName.innerHTML = '\n' + lblName.innerHTML;
+            
+            const inpWert = document.createElement('input');				
             divInpWert.appendChild(inpWert);
-            inpWert.className = 'inpWert';
-            inpWert.id = inpWert.className + el.idx;
-            inpWert.idx = el.idx;
-            inpWert.unit = el.einheit.trim();
-            //if (inpWert.unit.includes('&deg') || el.name.includes('Betriebsart')) inpWert.className += ' gradientSlider';
-            inpWert.unterGrenze = parseFloat(el.unterGrenze.trim());
-            inpWert.oberGrenze = parseFloat(el.oberGrenze.trim());
+            inpWert.className = `inpWert`;
+            inpWert.id = `inpWert${idx}`;
+            inpWert.idx = idx;
+            inpWert.unit = einheit.trim();
+            inpWert.unterGrenze = parseFloat(unterGrenze.trim());
+            inpWert.oberGrenze = parseFloat(oberGrenze.trim());
             inpWert.min = inpWert.unterGrenze;
             inpWert.minColor = '#1F94B9';
             inpWert.max = inpWert.oberGrenze;
@@ -2306,132 +2214,120 @@
             else {
                 inpWert.maxColor = '#1F94B9';
             }
-            inpWert.step = Math.pow(10, -el.nachKommaStellen);
-            inpWert.wert = parseFloat(el.wert);
-
-            //+Button hinter Slider erzeugen
+            inpWert.step = Math.pow(10, -nachKommaStellen);
+            inpWert.wert = parseFloat(wert);
+            
+            //+-Buttons neben Slider erzeugen
             if (range > 4) {
-                var btnIncDec = document.createElement('input');
-                divInpWert.appendChild(btnIncDec);
-                btnIncDec.type = 'button';
-                btnIncDec.className = 'btnIncDec btnInc';
-                var btnVal = Math.pow(10, -el.nachKommaStellen);
-                if (btnVal < 1) btnVal = btnVal.toString().slice(1);
-                btnIncDec.value = '+';// + btnVal;
-                btnIncDec.onclick = incrementSliderValue;
+                const adjustBtnArray = [`-`, `+`];
+                adjustBtnArray.forEach(el => {
+                    const btnIncDec = document.createElement('input');
+                    btnIncDec.type = 'button';
+                    btnIncDec.className = `btnIncDec`;
+                    btnIncDec.value = el;
+                    btnIncDec.wert = Math.pow(10, -nachKommaStellen);
+                    btnIncDec.addEventListener(`mousedown`, sliderAdjustValueBtnEventHandler);
+                    btnIncDec.addEventListener(`mouseup`, sliderAdjustValueBtnEventHandler);
+                    btnIncDec.addEventListener(`mouseout`, sliderAdjustValueBtnEventHandler);
+                    btnIncDec.addEventListener(`touchstart`, sliderAdjustValueBtnEventHandler);
+                    btnIncDec.addEventListener(`touchend`, sliderAdjustValueBtnEventHandler);
+                    btnIncDec.addEventListener(`touchcancel`, sliderAdjustValueBtnEventHandler);
+                    if (el === `-`) {
+                        btnIncDec.wert *= -1;
+                        divInpWert.insertBefore(btnIncDec, inpWert);
+                        btnIncDec.classList.add(`btnDec`); 
+                    }
+                    else if (el === `+`) {
+                        divInpWert.appendChild(btnIncDec);
+                        btnIncDec.classList.add(`btnInc`);
+                    }
+                });
             }
-
+            
             //console.log(range);
-            var checkedBtn;
-            switch (range) {
-
+            //let checkedBtn;
+            switch (range) {			
                 //createTriggerBtn (Einmalig...); radioBtnByNameNEW
                 case 2:
                     inpWert.type = 'button';
-                    inpWert.id = 'triggerBtn';
-                    inpWert.className += ' btnBA';
-                    inpWert.className += ' uncheckable';
+                    inpWert.classList.add(`btnBA`,`uncheckable`);
+                    inpWert.classList.toggle(`checked`, parseInt(wert));
                     inpWert.name = 'triggerBtn';
                     inpWert.wert = 1;
-                    inpWert.title = el.name.trim();
-                    inpWert.onclick = radioBtnByNameNEW;
-                    if (el.name.toUpperCase().includes('AUS')) {
-                        inpWert.id += 'Aus';
-                        inpWert.className += ' btnAus';
+                    inpWert.title = name.trim();
+                    inpWert.addEventListener(`click`, (ev) => radioBtnByNameNEW(ev.target));
+                    if (name.toUpperCase().includes('AUS')) {
+                        inpWert.id = `triggerBtnAus`;
+                        inpWert.classList.add('btnAus');
                     }
-                    else if (el.name.toUpperCase().includes('EIN')) {
-                        inpWert.id += 'Ein';
-                        inpWert.className += ' btnEin';
+                    else if (name.toUpperCase().includes('EIN')) {
+                        inpWert.id = `triggerBtnEin`;
+                        inpWert.classList.add('btnEin');
                     }
-                    if (el.wert == inpWert.wert) checkedBtn = inpWert;
+                    else if (name.toUpperCase().includes('TAGBETRIEB')) {
+                        inpWert.id = `triggerBtnTagbetrieb`;
+                        inpWert.value = `Partytaster`;
+                        inpWert.classList.add(`btnTagbetrieb`);
+                    }
+                    //if (wert == inpWert.wert) checkedBtn = inpWert;
                     break;
 
                 //createBtnCalender || createBtnGroup
                 case 3:
-                    if (parseFloat(el.unterGrenze.trim()) == 0) {
-                        inpWert.type = 'button';
-                        inpWert.id = 'calenderBtn';
-                        inpWert.className += ' calenderBtn';
-                        locked ? inpWert.wert = 2 : inpWert.wert = 1;
-                        inpWert.value = 'zum Kalender';
-                        inpWert.title = 'Absenkungswochenkalender öffnen';
-                        if (inpWert.wert == 2) inpWert.title += ' (schreibgeschützt)';
-                        inpWert.onclick = jumpToWochenKalender;
-                    }
-
-                    if (parseFloat(el.unterGrenze.trim()) == -1) {
-                        for (var i = 0; i < 3; i++) {
-                            if (i > 0) {
-                                var inpWert = document.createElement('input');
-                                divInpWert.appendChild(inpWert);
-                                inpWert.className = 'inpWert';
-                                inpWert.idx = el.idx;
-                            }
-
-                            var id;
-                            if (i == 0) id = 'Auto';
-                            if (i == 1) id = 'Ein';
-                            if (i == 2) id = 'Aus';
-
-                            inpWert.type = 'button';
-                            inpWert.title = id;
-                            inpWert.id = 'btn' + id + el.idx;	//el.idx nutzen um eindeutige IDs zu erzeugen
-                            inpWert.className += ' btnBA';
-                            inpWert.className += (' btn' + id);
-                            inpWert.name = 'btnBA' + el.idx;	//el.idx nutzen um eindeutige RadioGroups zu erzeugen
-                            (i == 2) ? inpWert.wert = -1 : inpWert.wert = i;
-                            inpWert.onclick = radioBtnByNameNEW;
-                            if (el.wert == inpWert.wert) checkedBtn = inpWert;
-                        }
-                    }
-                    break;
-
                 //createBtnGroup3PMischer (Auto, HandOpen, HandClose, Stop)
                 case 4:
-                    for (var i = 0; i < 4; i++) {
-                        if (i > 0) {
-                            var inpWert = document.createElement('input');
-                            divInpWert.appendChild(inpWert);
-                            inpWert.className = 'inpWert';
-                            inpWert.idx = el.idx;
-                        }
-
-                        var id;
-                        if (i == 0) id = 'Auto';
-                        if (i == 1) id = 'Auf';
-                        if (i == 2) id = 'Zu';
-                        if (i == 3) id = 'Stopp';
-
+                    if (parseFloat(unterGrenze.trim()) == 0) {
                         inpWert.type = 'button';
-                        inpWert.title = id;
-                        inpWert.id = 'btn' + id + el.idx;	//el.idx nutzen um eindeutige IDs zu erzeugen
-                        inpWert.className += ' btnBA';
-                        inpWert.className += (' btn' + id);
-                        inpWert.name = 'btnValve' + el.idx;	//el.idx nutzen um eindeutige RadioGroups zu erzeugen
-                        (i == 3) ? inpWert.wert = -1 : inpWert.wert = i;
-                        inpWert.onclick = radioBtnByNameNEW;
-                        if (el.wert == inpWert.wert) checkedBtn = inpWert;
+                        inpWert.id = 'calenderBtn';
+                        inpWert.classList.add(`calenderBtn`);
+                        inpWert.wert = locked ? 2 : 1;
+                        inpWert.value = 'zum Kalender';
+                        inpWert.title = `Absenkungswochenkalender öffnen${locked ? ' (schreibgeschützt)' : ''}`;
+                        //inpWert.title = 'Absenkungswochenkalender öffnen';
+                        //if (inpWert.wert == 2) inpWert.title += ' (schreibgeschützt)';
+                        inpWert.addEventListener(`click`, (ev) => jumpToWochenKalender(ev.target));
+                    }
+                    
+                    if (parseFloat(unterGrenze.trim()) == -1) {
+                        const idArray = (range === 3) ? [`Auto`, `Ein`, `Aus`] : [`Auto`, `Auf`, `Zu`, `Stopp`];
+                        idArray.forEach((el, elIdx) => {
+                            const inpBtn = (elIdx === 0) ? inpWert : document.createElement('input');
+                            if (i > 0) {			
+                                divInpWert.appendChild(inpBtn);
+                                inpBtn.className = 'inpWert';
+                                inpBtn.idx = idx;
+                            }
+                            inpBtn.type = 'button';
+                            inpBtn.title = el;
+                            inpBtn.id = `btn${el}${idx}`;	//idx nutzen um eindeutige IDs zu erzeugen
+                            inpBtn.classList.add(`btnBA`, `btn${el}`);
+                            inpBtn.name = `btnValve${idx}`;	//idx nutzen um eindeutige RadioGroups zu erzeugen
+                            inpBtn.wert = (elIdx === idArray.length - 1) ? -1 : elIdx;
+                            inpBtn.addEventListener(`click`, (ev) => radioBtnByNameNEW(ev.target));
+                            if (wert == inpBtn.wert)
+                                divRtosVar.initCheckedBtn = inpBtn;
+                        });
                     }
                     break;
-
+                    
                 //createSliderBtnCombo (Auto, Hand/(HandOn, HandOff))
                 case 101: //Kesselpumpe: (hat kein 'Aus' [-1]!; min = 1 statt 2)
                     inpWert.min = 1;
                 case 102:
                     lblName.innerHTML = 'Handwert\n\n' + lblName.innerHTML;
-
-                    var iterations = range - 100 + 1;
-                    /*console.log(el.name.toUpperCase().includes('MISCHER'));*/
-                    if (el.name.toUpperCase().includes('MISCHER') || el.name.toUpperCase().includes('VENTIL'))
+                                    
+                    const iterations = range - 100 + 1;
+                    /*console.log(name.toUpperCase().includes('MISCHER'));*/
+                    if (name.toUpperCase().includes('MISCHER') || name.toUpperCase().includes('VENTIL'))
                         iterations = 1;//*/			//SONDERFALL MISCHER!
-
-                    for (var i = 0; i <= iterations; i++) {
-                        var inpBtn = document.createElement('input');
+                    
+                    for (let i=0; i<=iterations; i++) {
+                        const inpBtn = document.createElement('input');				
                         divInpWert.appendChild(inpBtn);
                         inpBtn.className = 'inpWert';
-                        inpBtn.idx = el.idx;
-
-                        var id;
+                        inpBtn.idx = idx;
+                        
+                        let id;
                         if (i == 0) {
                             id = 'Auto';
                             inpBtn.wert = 0;
@@ -2449,69 +2345,73 @@
                             inpBtn.wert = -1;
                             inpWert.min = 2;
                         }
-
+                        
                         inpBtn.type = 'button';
-                        (id == 'Ein') ? inpBtn.title = id + ' (Sollw. intern)' : inpBtn.title = id;
-                        inpBtn.id = 'btn' + id + el.idx;//el.idx nutzen um eindeutige IDs zu erzeugen
-                        inpBtn.className += ' btnBA';
-                        inpBtn.className += (' btn' + id);
-                        inpBtn.name = 'btnBA' + el.idx;	//el.idx nutzen um eindeutige RadioGroups zu erzeugen
-                        //console.log(el.idx);
-                        //(i == 3) ? inpBtn.value = -1 : inpBtn.value = i/2;
-                        inpBtn.onclick = controlGroupBtnHandlerNEW;
-                        if (el.wert == inpBtn.wert) checkedBtn = inpBtn;
-                        //console.log(checkedBtn);
+                        inpBtn.title = (id == 'Ein') ? `${id} (Sollw. intern)` : id;
+                        inpBtn.id = `btn${id}${idx}`;	//idx nutzen um eindeutige IDs zu erzeugen
+                        inpBtn.classList.add(`btnBA`, `btn${id}`);
+                        inpBtn.name = `btnBA${idx}`;	//idx nutzen um eindeutige RadioGroups zu erzeugen
+                        inpBtn.addEventListener(`click`, (ev) => controlGroupBtnHandlerNEW(ev.target));
+                        
+                        if (wert == inpBtn.wert || (!divRtosVar.initCheckedBtn && id === `Hand`))
+                            divRtosVar.initCheckedBtn = inpBtn;	
                     }
-                    if (checkedBtn == undefined || checkedBtn == null) checkedBtn = document.getElementById('btnHand' + el.idx);
-                //hier KEIN break um zusätzlichen slider zu erzeugen!
-                //break;
+                    //hier KEIN break um zusätzlichen slider zu erzeugen!
+                    //break;
                 //createSlider/Number?
                 default:
                     inpWert.type = 'range';
-
-                    inpWert.value = inpWert.wert;
-                    if (parseFloat(inpWert.value) < parseFloat(inpWert.min)) inpWert.value = inpWert.min;
-                    if (parseFloat(inpWert.value) > parseFloat(inpWert.max)) inpWert.value = inpWert.max;
+                    inpWert.value = constrain(inpWert.wert, inpWert.min, inpWert.max);
                     inpWert.wert = inpWert.value;
-
-                    if (inpWert.type == 'number' || inpWert.type == 'text') inpWert.onclick = showOSK; //OSK für 'text' & 'number' bei Eingabe einblenden
-                    if (inpWert.type == 'range') inpWert.oninput = sliderHandler;
-            }
-
+                    
+                    if (inpWert.type == 'number' || inpWert.type == 'text')
+                        inpWert.addEventListener(`click`, showOSK); //OSK für 'text' & 'number' bei Eingabe einblenden
+                    if (inpWert.type == 'range')
+                        inpWert.addEventListener(`input`, (ev) => sliderHandler(ev.target));
+            }	
+            
             //Unit-Label erzeugen & anhängen
-            var lblUnit = document.createElement('label');
+            const lblUnit = document.createElement('label');				
             divRtosVar.appendChild(lblUnit);
             lblUnit.className = 'lblUnit';
-            lblUnit.idx = el.idx;
-            lblUnit.value = inpWert.value;//parseFloat(el.wert);
-            lblUnit.unit = el.einheit.trim();
-            if (lblUnit.unit != '' && lblUnit.unit != '3P') lblUnit.innerHTML = inpWert.value + ' ' + inpWert.unit;
-            if (lblUnit.innerHTML.includes('undefined')) lblUnit.innerHTML = "";
+            lblUnit.idx = idx;
+            lblUnit.value = inpWert.value;//parseFloat(wert);
+            lblUnit.unit = (range > 4) ? einheit.trim() : ``;
+            if (lblUnit.unit && lblUnit.unit != '3P')
+                lblUnit.innerHTML = `${inpWert.value} ${inpWert.unit}`;
+            if (lblUnit.innerHTML.includes('undefined'))
+                lblUnit.innerHTML = "";
+            
+            return divRtosVar;
+        }
 
-            //pseudoEvents ausführen um aktuellen Zustand zu Initiieren
-            var pseudoEvent = {};
-            if (inpWert.type == 'range') {
-                pseudoEvent.target = inpWert;
-                sliderHandler(pseudoEvent);
+        function initControlGroup(divRtosVar) {
+            //console.log(divRtosVar);
+            const {initCheckedBtn} = divRtosVar;
+            const slider = divRtosVar.querySelector(`[type = "range"]`);
+            
+            //targetHandler ausführen um aktuellen Zustand zu Initiieren
+            if (slider) {
+                sliderHandler(slider);
+                if (initCheckedBtn)
+                    controlGroupBtnHandlerNEW(initCheckedBtn);
             }
-
-            if (checkedBtn != null && checkedBtn != undefined) {
-                pseudoEvent.target = checkedBtn;
-                (range > 4) ? controlGroupBtnHandlerNEW(pseudoEvent) : radioBtnByNameNEW(pseudoEvent);
+            else if (initCheckedBtn) {
+                radioBtnByNameNEW(initCheckedBtn);
             }
-            //return divRtosVar;
         }
 
         function buildFaceplateNEW() {            
             let fpSection;
-            ClickableElement.forEach(function (el) {
+            ClickableElement.forEach(el => {
+                const {sectionIndicator, wert, name} = el;
                 const h4fpHeader = document.getElementById('h4FpHeader');
-                if (el.sectionIndicator.toUpperCase() == 'H')
-                    h4fpHeader.innerHTML = `${el.wert.trim()} Parameter`;
+                if (sectionIndicator.match(/H/i))
+                    h4fpHeader.innerHTML = `${wert.trim()} Parameter`;
                 
-                const sectionTitle =    (el.name.includes('Betriebsart') || el.name.includes('Wochenkalender')) ? el.name.trim() :
-                                        (el.name.includes('NennVL')) ? 'HK-Temperaturparameter' :
-                                        (el.name.includes('20 &degC')) ? 'Pumpenkennlinie\n(nach Außentemperatur)' : 
+                const sectionTitle =    (name.match(/(Betriebsart)|(Wochenkalender)|(Tagbetrieb)/i))  ? name.trim() :
+                                        (name.match(/(NennVL)/i)) ? 'HK-Temperaturparameter' :
+                                        (name.match(/(20 &degC)/i)) ? 'Pumpenkennlinie\n(nach Außentemperatur)' : 
                                         undefined;
                 
                 if (sectionTitle || !fpSection) {
@@ -2530,28 +2430,13 @@
                 }
 
                 //FP-Zeile erzeugen
-                if (el.sectionIndicator.toUpperCase() != 'H' && el.wert.trim() != '')
-                    createControlGroup(fpSection, el);
+                if (!sectionIndicator.match(/H/i) && wert.trim() != '') {
+                    const divRtosVar = createControlGroup(el);
+			        fpSection.appendChild(divRtosVar);
+			        initControlGroup(divRtosVar);
+                }
             });
         }
-
-        //function jumpToWochenKalender(event) {
-        //	//1.Deaktivieren Autoreload Funktion beim Fernbedienung ? (überlegung)
-        //	clearInterval(fernbedienungAutoReload);
-        //	//2.Der Wert 'HK Wochenkalender' wird auf 1 geändert und zurückübertragen (gesamte 20 Zeile)
-        //	//Pearl-seitig wird das HK-Wochenkalender aufm Canvas gerendert.
-        //	//var sendError = sendValueFromVisuToRtos('openHKWochenKalender');
-        //	var sendError = sendDataToRtosNEW(event);
-        //	if (!sendError) {
-        //		//3.Modalfenster mit eingebettets Heizkreiswochenkalender einblenden oder Fernbedienung Tab im Iframe darstellen
-        //     	//showElemementById('wochenKalenderImVisu');
-
-        //		showWochenKalenderVisu();
-        //		activeTabID = 'wochenKalenderImVisu';
-        //		wochenKalenderImVisuAutoReload = setInterval(refreshTextAreaWithoutParameterLocal, 50, wochenKalenderImVisuCanvasContext, wochenKalenderImVisuCanvas);
-        //	}
-        //}
-
 
         function closeModalWochenKalenderImVisu() {
             hideElemementById('wochenKalenderImVisu');
@@ -5838,7 +5723,7 @@
 			<div id="fpBody" class="modalVisuBody" >
 			</div>
 			<div id="fpFooter" class="modalVisuFooter">
-			  <input type="button" id="btnFaceplateConfirm" onclick ="sendDataToRtosNEW(event)" value="Übernehmen"/> 
+			  <input type="button" id="btnFaceplateConfirm" onclick ="sendDataToRtosEventHandler(event)" value="Übernehmen"/> 
 			  <input type="button" id="btnFaceplateCancel" onclick="closeFaceplate()" value="Abbrechen" /> 
 			</div>
 		  </div>

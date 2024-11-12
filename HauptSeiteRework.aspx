@@ -515,8 +515,7 @@
         }
 
         function openVisu() {
-            console.log(checkUserRole());
-            window.open(`/VisuView${(checkUserRole()) ? 'Admin' : ''}.aspx?Id=${this.id.substring(0, 5)}`, '', 'width=1300, height=820, location = yes,scrollbars = yes')
+            window.open(`/VisuView${(checkUserRole()) ? /*'Admin'*/'' : ''}.aspx?Id=${this.id.substring(0, 5)}`, '', 'width=1300, height=820, location = yes,scrollbars = yes')
         }
 
         function openProjektVerwaltung() {
