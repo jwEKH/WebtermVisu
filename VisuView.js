@@ -491,7 +491,7 @@ function globalTimer() {
 
 
 
-function Heizkreis(vDynCtx, x, y,betrieb) {
+function fpButton(ctx, x, y, betrieb) {
 	var notches = 7,                      // num. of notches
 		radiusO = 12,                    // outer radius
 		radiusI = 9,                    // inner radius
@@ -507,28 +507,28 @@ function Heizkreis(vDynCtx, x, y,betrieb) {
 		a = angle,                  // iterator (angle)
 		toggle = false;                  // notch radius level (i/o)
 
-	vDynCtx.save();
-	vDynCtx.fillStyle = '#000';
-	vDynCtx.lineWidth = 2.5;
-	vDynCtx.strokeStyle = '#000';
-	vDynCtx.beginPath();
-	vDynCtx.moveTo(x + radiusO * Math.cos(taperAO), y + radiusO * Math.sin(taperAO));
+	ctx.save();
+	ctx.fillStyle = '#000';
+	ctx.lineWidth = 2.5;
+	ctx.strokeStyle = '#000';
+	ctx.beginPath();
+	ctx.moveTo(x + radiusO * Math.cos(taperAO), y + radiusO * Math.sin(taperAO));
 
 	for (; a <= pi2; a += angle) {
 
 		// draw inner to outer line
 		if (toggle) {
-			vDynCtx.lineTo(x + radiusI * Math.cos(a - taperAI),
+			ctx.lineTo(x + radiusI * Math.cos(a - taperAI),
 				y + radiusI * Math.sin(a - taperAI));
-			vDynCtx.lineTo(x + radiusO * Math.cos(a + taperAO),
+			ctx.lineTo(x + radiusO * Math.cos(a + taperAO),
 				y + radiusO * Math.sin(a + taperAO));
 		}
 
 		// draw outer to inner line
 		else {
-			vDynCtx.lineTo(x + radiusO * Math.cos(a - taperAO),  // outer line
+			ctx.lineTo(x + radiusO * Math.cos(a - taperAO),  // outer line
 				y + radiusO * Math.sin(a - taperAO));
-			vDynCtx.lineTo(x + radiusI * Math.cos(a + taperAI),  // inner line
+			ctx.lineTo(x + radiusI * Math.cos(a + taperAI),  // inner line
 				y + radiusI * Math.sin(a + taperAI));
 		}
 
@@ -536,41 +536,36 @@ function Heizkreis(vDynCtx, x, y,betrieb) {
 		toggle = !toggle;
 	}
 	// close the final line
-	vDynCtx.closePath();
-	vDynCtx.moveTo(x + radiusH, y);
-	vDynCtx.arc(x, y, radiusH, 0, pi2);
-	
-	    if (betrieb == '0') {
+	ctx.closePath();
+	ctx.moveTo(x + radiusH, y);
+	ctx.arc(x, y, radiusH, 0, pi2);
 
-    }
-    else {
-        //vDynCtx.font = "12px Arial";
-        //vDynCtx.fillText("Handbetrieb", x - 20, y + 24);
-        vDynCtx.translate(x,y)
-        vDynCtx.moveTo(40, 27);
-        vDynCtx.lineTo(40, 10);
-        vDynCtx.arc(38, 8, 2, 2 * Math.PI, 1 * Math.PI, true);
-        vDynCtx.lineTo(36, 16);
-        vDynCtx.arc(34, 6.5, 2, 2 * Math.PI, 1 * Math.PI, true);
-        vDynCtx.lineTo(32, 15);
-        vDynCtx.arc(30, 5.5, 2, 2 * Math.PI, 1 * Math.PI, true);
-        vDynCtx.lineTo(28, 15);
-        vDynCtx.arc(26, 6.5, 2, 2 * Math.PI, 1 * Math.PI, true);
-        vDynCtx.lineTo(24, 20);
-        vDynCtx.lineTo(20, 16);
-        vDynCtx.arc(19, 17.8, 2, 1.8 * Math.PI, 0.8 * Math.PI, true);
-        vDynCtx.lineTo(26, 27);
-        vDynCtx.lineTo(40, 27);
-        vDynCtx.fillStyle = 'yellow';
-        vDynCtx.scale(1, 1)
-        vDynCtx.fill();
-        //vDynCtx.stroke();
-    }
-    vDynCtx.stroke();
-    vDynCtx.restore();
-	
-	vDynCtx.stroke();
-	vDynCtx.restore();
+	//automatik betrieb
+	if (betrieb != '0') {
+		//vDynCtx.font = "12px Arial";
+		//vDynCtx.fillText("Handbetrieb", x - 20, y + 24);
+		ctx.translate(x, y);
+		ctx.moveTo(40, 27);
+		ctx.lineTo(40, 10);
+		ctx.arc(38, 8, 2, 2 * Math.PI, 1 * Math.PI, true);
+		ctx.lineTo(36, 16);
+		ctx.arc(34, 6.5, 2, 2 * Math.PI, 1 * Math.PI, true);
+		ctx.lineTo(32, 15);
+		ctx.arc(30, 5.5, 2, 2 * Math.PI, 1 * Math.PI, true);
+		ctx.lineTo(28, 15);
+		ctx.arc(26, 6.5, 2, 2 * Math.PI, 1 * Math.PI, true);
+		ctx.lineTo(24, 20);
+		ctx.lineTo(20, 16);
+		ctx.arc(19, 17.8, 2, 1.8 * Math.PI, 0.8 * Math.PI, true);
+		ctx.lineTo(26, 27);
+		ctx.lineTo(40, 27);
+		ctx.fillStyle = 'yellow';
+		ctx.scale(1, 1);
+		ctx.fill();
+		//vDynCtx.stroke();
+	}
+	ctx.stroke();
+	ctx.restore();
 }
 
 
@@ -579,7 +574,7 @@ function Absenkung(vDynCtx, x, y, scale, active) {
 	vDynCtx.save();
 	vDynCtx.moveTo(0 - 10 * scale, 0);
 	vDynCtx.font = '10pt Arial';
-	vDynCtx.fillStyle = 'blue';
+	vDynCtx.fillStyle = `#1F94B9`; /*EKH Cyan*/ //'blue';
 
 	vDynCtx.translate(x, y);
 
@@ -597,7 +592,7 @@ function BHDreh(vctx, x, y, scale, rotation) {
 	vctx.lineWidth = 1 * scale;
 	vctx.translate(x, y);
 	vctx.rotate(Math.PI / 180 * rotation);
-	vctx.strokeStyle = "steelblue";
+	vctx.strokeStyle = `#1F94B9`; /*EKH Cyan*/ //"steelblue";
 	vctx.beginPath();
 	vctx.arc(0, 0, 13 * scale, 0, Math.PI * 2, true);
 
@@ -732,28 +727,83 @@ function luefter(vctx, x, y, scale, rotL, rotDir) {
 	vctx.restore();
 }
 
-function ventil(vctx, x, y, scale, rot) {
+function ventil(ctx, x, y, scale, rot) {
 	// 6x6
-	vctx.save();
-	vctx.strokeStyle = "black";
-	vctx.fillStyle = "black";
-	vctx.lineWidth = 1;
-	vctx.translate(x, y);
-	vctx.rotate(Math.PI / 180 * rot);
-	vctx.scale(scale, scale);
-	vctx.beginPath();
-	vctx.fillRect(-3, -1, 3, 2);
-	vctx.moveTo(0, 3);
-	vctx.lineTo(3, 0);
-	vctx.lineTo(0, -3);
-	vctx.fill();
+	ctx.save();
+	ctx.strokeStyle = "black";
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 1;
+	ctx.translate(x, y);
+	ctx.rotate(Math.PI / 180 * (rot + 180));
+	ctx.scale(scale, scale);
+	ctx.beginPath();
+	ctx.fillRect(-1.5, -1, 1.5, 2);
+	ctx.moveTo(0, 2);
+	ctx.lineTo(2, 0);
+	ctx.lineTo(0, -2);
+	ctx.fill();
+	//patch 22.11.2022: doppelte Pfeile
+	ctx.translate(11, 0);
+	ctx.fillRect(-1.5, -1, 1.5, 2);
+	ctx.moveTo(0, 2);
+	ctx.lineTo(2, 0);
+	ctx.lineTo(0, -2);
+	ctx.fill();
 
-	vctx.restore();
+	ctx.restore();
+}
+
+function ventilFilled(ctx, x, y, scale, rot) {
+	// 6x6
+	ctx.save();
+	ctx.strokeStyle = "black";
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 1;
+	ctx.translate(x, y);
+	ctx.rotate(Math.PI / 180 * rot);
+	ctx.scale(scale, scale);
+	ctx.beginPath();
+	
+	ctx.moveTo(-8, -8);
+	ctx.lineTo(-8, 8);
+	ctx.lineTo(8, 0);
+	ctx.lineTo(-8, -8);
+
+	ctx.fill();
+
+	ctx.restore();
+}
+
+function lueftungsklappe(ctx, x, y, scale, val, orientation = 'Links', isNC = true) {
+	let rotation = 0;
+	if (orientation == 'Oben') rotation = 90;
+	if (orientation == 'Rechts') rotation = 180;
+	if (orientation == 'Unten') rotation = 270;
+	if (!val) val = 0;
+	if (isNC) val = 100 - val;
+	rotation -= val/100 * 75;
+	
+	ctx.save();
+	ctx.strokeStyle = "black";
+	ctx.lineWidth = 1;
+	ctx.translate(x, y);
+	ctx.scale(scale, scale);
+	ctx.beginPath();
+	//Kreis zeichnen
+	ctx.arc(0, 0, 3, 0, 2 * Math.PI);
+	ctx.fillStyle = 'black';
+	ctx.fill();
+
+	
+	ctx.rotate(rotation * Math.PI / 180);
+	ctx.moveTo(-20, 0);
+	ctx.lineTo(20, 0);
+
+	ctx.stroke();
+	ctx.restore();
 }
 
 function Led(vctx, x, y, scale, col) {
-
-
 	vctx.save();
 	vctx.strokeStyle = "black";
 	vctx.fillStyle = "#aaa";
@@ -771,6 +821,31 @@ function Led(vctx, x, y, scale, col) {
 	vctx.fillStyle = col;
 	vctx.fill();
 	vctx.restore();
+}
+
+function schalter(ctx, x, y, scale, val, orientation = 'Links') {
+	const rotation =    (orientation === 'Oben') ? 90 :
+						(orientation == 'Rechts') ? 180 :
+						(orientation == 'Unten') ? 270 : 0;
+				
+	ctx.save();
+	ctx.strokeStyle = "black";
+	ctx.lineWidth = 2;
+	ctx.translate(x, y);
+	ctx.rotate(Math.PI / 180 * rotation);
+	ctx.scale(scale, scale);
+	ctx.beginPath();
+	//Kreis zeichnen
+	ctx.moveTo(-20, 0);
+	ctx.lineTo(-10, 0);
+	ctx.lineTo(13, (val) ? -3 : -15);
+
+	ctx.moveTo(10, -5);
+	ctx.lineTo(10, 0);
+	ctx.lineTo(20, 0);
+
+	ctx.stroke();
+	ctx.restore();
 }
 
 
@@ -973,36 +1048,26 @@ function drawVCOItem(item) {
 				var nk = values[i].Nachkommastellen;
 				gasSensorWert = parseFloat((value * 100) / 100).toFixed(nk);
 			}
-			if ((values[i].Bezeichnung == "HKNA") && (vco.Kanal == values[i].Kanal)) {
-			svalue = values[i].sWert;
+			if ((values[i].Bezeichnung == "HKNA") & (vco.Kanal == values[i].Kanal)) {
+				svalue = values[i].sWert;
 			}
+		}
+
+		if (item.VCOItem.Bez.trim() == "KES") {
+			item.BgColor = "#fc1803";
 		}
 
 		if ((item.VCOItem.Bez.trim() == "GA") && (gasSensorWert > stoerGrenze)) {
 			item.BgColor = "#fc1803";
-			if (item.VCOItem.Projektnummer.trim() == "P 676") {
-				svalue = "     ";
-				vco.sEinheit = "     ";
-			}
 		}
-		
 
-			
 		if ((item.VCOItem.Bez.trim() == "GA") && (gasSensorWert < stoerGrenze) && (gasSensorWert > warnGrenze)) {
 			item.BgColor = "#fcdf03";
-			if (item.VCOItem.Projektnummer.trim() == "P 676") {
-				svalue = "     ";
-				vco.sEinheit = "     ";
-			}
 		}
 
 		if (warnGrenze != null) {
 			if ((item.VCOItem.Bez.trim() == "GA") && (gasSensorWert < warnGrenze)) {
 				item.BgColor = "#42f545";
-				if (item.VCOItem.Projektnummer.trim() == "P 676") {
-					svalue = "     ";
-					vco.sEinheit = "     ";
-				}
 			}
 		}
 
@@ -1014,76 +1079,58 @@ function drawVCOItem(item) {
 		}
 		else {
 			if (vco.isBool) {
-
-				/*SettingsFromVisualisierung*/
-				if (item.Symbol == "Heizkreis") {
-					if (svalue.trim() == "1")
-						Heizkreis(vDynCtx, item.x, item.y, 1);
-					else
-						Heizkreis(vDynCtx, item.x, item.y, 0);
+				if (item.Symbol === `fpButton` || item.Symbol === `Heizkreis`) {
+					const val = parseFloat(svalue.trim());
+						fpButton(vDynCtx, item.x, item.y, val);
 				}
 
 				if (item.Symbol == "Absenkung") {
-					if (svalue.trim() == "1")
-						Absenkung(vDynCtx, item.x, item.y, 1, 1);
-					else
-						Absenkung(vDynCtx, item.x, item.y, 1, 0);
+					const val = parseFloat(svalue.trim());
+						Absenkung(vDynCtx, item.x, item.y, 1, val);
 				}
 
 				if (item.Symbol == "Feuer") {
-					if (svalue.trim() == "1")
+					const val = parseFloat(svalue.trim());
+					if (val)
 						feuer(vDynCtx, item.x, item.y, 1);
 				}
 
 				if (item.Symbol == "BHKW") {
-					if (svalue.trim() == "1")
-						BHDreh(vDynCtx, item.x, item.y, 1, TimerCounter * 30);
-					else
-						BHDreh(vDynCtx, item.x, item.y, 1, 0);
+					const val = parseFloat(svalue.trim());
+					BHDreh(vDynCtx, item.x, item.y, 1, TimerCounter * 30 * val);
 				}
 
 				if (item.Symbol == "Pumpe") {
-					if (svalue.trim() == "1")
-						pmpDreh2(vDynCtx, item.x, item.y, 1, TimerCounter * 30);
-					else
-						pmpDreh2(vDynCtx, item.x, item.y, 1, 0);
+					const val = parseFloat(svalue.trim());
+					pmpDreh2(vDynCtx, item.x, item.y, 1, TimerCounter * 30 * val);
 				}
-
+				
+				const rotation =    (item.SymbolFeature === "Rechts") ? 180 :
+									(item.SymbolFeature === "Oben") ? 90 :
+									(item.SymbolFeature === "Unten") ? 270 : 0;
 				if (item.Symbol == "Luefter") {
-					var angle = 30;
-					if (svalue.trim() == "1")
-						angle = TimerCounter * 30;
+					const val = parseFloat(svalue.trim());
+					const angle = (val) ? TimerCounter * 30 : 30;
+					luefter(vDynCtx, item.x, item.y, 1, angle, rotation);
+				}
 
-					if (item.SymbolFeature == "Links") {
-						luefter(vDynCtx, item.x, item.y, 1, angle, 0);
+				if (item.Symbol === "Ventil") {
+					const val = parseFloat(svalue.trim());
+					if (val) {
+						ventil(vDynCtx, item.x, item.y, 2, rotation);
 					}
-					if (item.SymbolFeature == "Rechts") {
-						luefter(vDynCtx, item.x, item.y, 1, angle, 180);
-					}
-					if (item.SymbolFeature == "Oben") {
-						luefter(vDynCtx, item.x, item.y, 1, angle, 90);
-					}
-					if (item.SymbolFeature == "Unten") {
-						luefter(vDynCtx, item.x, item.y, 1, angle, 270);
+				}
+				if (item.Symbol === "VentilFilled") {
+					const val = parseFloat(svalue.trim());
+					if (val) {
+						ventilFilled(vDynCtx, item.x, item.y, 1, rotation);
 					}
 				}
 
-				if (item.Symbol == "Ventil") {
-					if (svalue.trim() == "1") {
-
-						if (item.SymbolFeature == "Links") {
-							ventil(vDynCtx, item.x, item.y, 2, 180);
-						}
-						if (item.SymbolFeature == "Rechts") {
-							ventil(vDynCtx, item.x, item.y, 2, 0);
-						}
-						if (item.SymbolFeature == "Oben") {
-							ventil(vDynCtx, item.x, item.y, 2, 270);
-						}
-						if (item.SymbolFeature == "Unten") {
-							ventil(vDynCtx, item.x, item.y, 2, 90);
-						}
-					}
+				if (item.Symbol == "Lueftungsklappe" || item.Symbol == "Abluftklappen") {
+					let val = parseFloat(svalue.trim());
+					if (val == 1) val = 100;
+					lueftungsklappe(vDynCtx, item.x, item.y, 1, val, item.SymbolFeature);                            
 				}
 
 				if (item.Symbol == "Led") {
@@ -1100,6 +1147,7 @@ function drawVCOItem(item) {
 							Led(vDynCtx, item.x, item.y, 1, "red");
 
 					}
+
 					if (item.SymbolFeature == "rot/gruen") {
 						if (!b)
 							Led(vDynCtx, item.x, item.y, 1, "red");
@@ -1107,6 +1155,7 @@ function drawVCOItem(item) {
 							Led(vDynCtx, item.x, item.y, 1, "green");
 
 					}
+
 					if (item.SymbolFeature == "unsichtbar/rot blinkend") {
 						if (b) {
 							if (TimerToggle)
@@ -1121,11 +1170,14 @@ function drawVCOItem(item) {
 								Led(vDynCtx, item.x, item.y, 1, "red");
 						}
 					}
-					if (item.SymbolFeature == "gruen/unsichtbar") {
-						if (b)
-							Led(vDynCtx, item.x, item.y, 1, "green");
-					}
 				}
+
+				if (item.Symbol == "Schalter") {
+					const val = parseFloat(svalue.trim());
+					schalter(vDynCtx, item.x, item.y, 1, val, item.SymbolFeature);
+				}
+
+				
 
 				hasSymbolsFlag = true;
 			}
@@ -1134,13 +1186,14 @@ function drawVCOItem(item) {
 				vDynCtx.font = item.font;
 				var w = vDynCtx.measureText(txt).width;
 				vDynCtx.fillStyle = item.BgColor;
-				if (item.BgColor && item.BgColor != '#BEBEBE' && item.BgColor != '#E0E0E0') vDynCtx.fillRect(x - 1, y - item.BgHeight - 1, w + 2, item.BgHeight + 3);
+				vDynCtx.fillRect(x - 1, y - item.BgHeight - 1, w + 2, item.BgHeight + 3);
 				vDynCtx.fillStyle = item.Color;
 				vDynCtx.fillText(txt, x, y);
 			}
 		}
 	}
 }
+
 
 // Aufruf Funktion
 function drawPropertyList() {
