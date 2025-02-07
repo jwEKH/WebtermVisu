@@ -541,7 +541,7 @@ function fpButton(ctx, x, y, betrieb) {
 	ctx.arc(x, y, radiusH, 0, pi2);
 
 	//automatik betrieb
-	if (betrieb != '0') {
+	if (!!betrieb) {
 		//vDynCtx.font = "12px Arial";
 		//vDynCtx.fillText("Handbetrieb", x - 20, y + 24);
 		ctx.translate(x, y);
@@ -804,23 +804,25 @@ function lueftungsklappe(ctx, x, y, scale, val, orientation = 'Links', isNC = tr
 }
 
 function Led(vctx, x, y, scale, col) {
-	vctx.save();
-	vctx.strokeStyle = "black";
-	vctx.fillStyle = "#aaa";
-	vctx.lineWidth = 1;
-	vctx.translate(x, y);
-	vctx.scale(scale, scale);
-	vctx.beginPath();
-
-	vctx.arc(0, 0, 6, 0, Math.PI * 2, true);
-	vctx.stroke();
-	vctx.fill();
-	vctx.closePath();
-	vctx.beginPath();
-	vctx.arc(0, 0, 4, 0, Math.PI * 2, true);
-	vctx.fillStyle = col;
-	vctx.fill();
-	vctx.restore();
+	if (col) {
+		vctx.save();
+		vctx.strokeStyle = "black";
+		vctx.fillStyle = "#aaa";
+		vctx.lineWidth = 1;
+		vctx.translate(x, y);
+		vctx.scale(scale, scale);
+		vctx.beginPath();
+		
+		vctx.arc(0, 0, 6, 0, Math.PI * 2, true);
+		vctx.stroke();
+		vctx.fill();
+		vctx.closePath();
+		vctx.beginPath();
+		vctx.arc(0, 0, 4, 0, Math.PI * 2, true);
+		vctx.fillStyle = col;
+		vctx.fill();
+		vctx.restore();
+	}
 }
 
 function schalter(ctx, x, y, scale, val, orientation = 'Links') {
@@ -1016,180 +1018,104 @@ function _drawDropList() {
 
 // Properties zeichnen incl. Symbole
 function drawVCOItem(item) {
-	if (item["bmpIndex"] == bmpIndex) {
-		var warnGrenze;
-		var stoerGrenze;
-		var gasSensorWert;
-		var x = item.x;
-		var y = item.y;
-		var vco = item["VCOItem"];
-		var values = VisuDownload.Items;
-		var svalue = "-";
-		var n = values.length;
-		for (var i = 0; i < n; i++) {
-			if (vco.Bez.trim() == values[i].Bezeichnung.trim() && vco.Kanal == values[i].Kanal) {
-				var value = values[i].Wert;
-				var nk = values[i].Nachkommastellen;
-				svalue = parseFloat((value * 100) / 100).toFixed(nk);
-			}
+	if (item.bmpIndex == bmpIndex) {
+		const msr = `${item.VCOItem.Bez.trim()}${parseInt(item.VCOItem.Kanal)}`;
+		let svalue = "-";
 
-			if ((values[i].Bezeichnung == "GR") && (values[i].Kanal == 2)) {
-				var value = values[i].Wert;
-				var nk = values[i].Nachkommastellen;
-				warnGrenze = parseFloat((value * 100) / 100).toFixed(nk);
-			}
-			if ((values[i].Bezeichnung == "GR") && (values[i].Kanal == 3)) {
-				var value = values[i].Wert;
-				var nk = values[i].Nachkommastellen;
-				stoerGrenze = parseFloat((value * 100) / 100).toFixed(nk);
-			}
-			if (values[i].Bezeichnung == "GA") {
-				var value = values[i].Wert;
-				var nk = values[i].Nachkommastellen;
-				gasSensorWert = parseFloat((value * 100) / 100).toFixed(nk);
-			}
-			if ((values[i].Bezeichnung == "HKNA") & (vco.Kanal == values[i].Kanal)) {
-				svalue = values[i].sWert;
-			}
+		const liveDataItem = VisuDownload.Items.find(liveDataItem => msr === `${liveDataItem.Bezeichnung.trim()}${parseInt(liveDataItem.Kanal)}`);
+		if (liveDataItem) {
+			const {Bezeichnung, sWert, Wert, Nachkommastellen} = liveDataItem;
+			svalue = (Bezeichnung.trim() === "HKNA") ? sWert : parseFloat(Wert).toFixed(Nachkommastellen);
 		}
 
-		if (item.VCOItem.Bez.trim() == "KES") {
-			item.BgColor = "#fc1803";
-		}
-
-		if ((item.VCOItem.Bez.trim() == "GA") && (gasSensorWert > stoerGrenze)) {
-			item.BgColor = "#fc1803";
-		}
-
-		if ((item.VCOItem.Bez.trim() == "GA") && (gasSensorWert < stoerGrenze) && (gasSensorWert > warnGrenze)) {
-			item.BgColor = "#fcdf03";
-		}
-
-		if (warnGrenze != null) {
-			if ((item.VCOItem.Bez.trim() == "GA") && (gasSensorWert < warnGrenze)) {
-				item.BgColor = "#42f545";
+		const val = parseFloat(svalue.trim());
+		if (item.VCOItem.isBool) {
+			if (item.Symbol.match(/(fpButton)|(Heizkreis)/)) {
+				fpButton(vDynCtx, item.x, item.y, val);
 			}
-		}
 
-		var txt = svalue + " " + vco.sEinheit;
+			if (item.Symbol == "Absenkung") {
+				Absenkung(vDynCtx, item.x, item.y, 1, val);
+			}
 
-		if (false) { // item.ShowSymbolMenue) {
-			CurrentDroplistItem = item;
-			location.href = '#EditSymbol';
+			if (item.Symbol == "Feuer") {
+				if (val)
+				feuer(vDynCtx, item.x, item.y, 1);
+			}
+
+			if (item.Symbol == "BHKW") {
+				BHDreh(vDynCtx, item.x, item.y, 1, TimerCounter * 30 * val);
+			}
+
+			if (item.Symbol == "Pumpe") {
+				pmpDreh2(vDynCtx, item.x, item.y, 1, TimerCounter * 30 * val);
+			}
+			
+			const rotation =    (item.SymbolFeature === "Rechts") ? 180 :
+								(item.SymbolFeature === "Oben") ? 90 :
+								(item.SymbolFeature === "Unten") ? 270 : 0;
+			if (item.Symbol == "Luefter") {
+				const angle = (val) ? TimerCounter * 30 : 30;
+				luefter(vDynCtx, item.x, item.y, 1, angle, rotation);
+			}
+
+			if (item.Symbol === "Ventil") {
+				if (val) {
+					ventil(vDynCtx, item.x, item.y, 2, rotation);
+				}
+			}
+			if (item.Symbol === "VentilFilled") {
+				if (val) {
+					ventilFilled(vDynCtx, item.x, item.y, 1, rotation);
+				}
+			}
+
+			if (item.Symbol.match(/(Lueftungsklappe)|(Abluftklappen)/)) {
+				const _val = (val === 1) ? 100 : val;
+				lueftungsklappe(vDynCtx, item.x, item.y, 1, _val, item.SymbolFeature);                            
+			}
+
+			if (item.Symbol === "Led") {
+				const falseColor = (item.SymbolFeature.match(/(gruen\/)/)) ? `green` :
+								   (item.SymbolFeature.match(/(rot\/)/)) ? `red` :
+								   undefined;
+				const trueColor = (item.SymbolFeature.match(/(\/gruen)/)) ? `green` :
+								  (item.SymbolFeature.match(/(\/rot)/)) ? `red` :
+								  undefined;
+				const blink = item.SymbolFeature.match(/(blinkend)/);
+				const _val = !!parseInt(svalue);
+				const currentColor = (_val) ? trueColor : falseColor;
+
+				if (!(blink && TimerToggle)) {
+					Led(vDynCtx, item.x, item.y, 1, currentColor);
+				}
+			}
+
+			if (item.Symbol == "Schalter") {
+				schalter(vDynCtx, item.x, item.y, 1, val, item.SymbolFeature);
+			}
+
+			hasSymbolsFlag = true;
 		}
 		else {
-			if (vco.isBool) {
-				if (item.Symbol === `fpButton` || item.Symbol === `Heizkreis`) {
-					const val = parseFloat(svalue.trim());
-						fpButton(vDynCtx, item.x, item.y, val);
-				}
+			VisuDownload.Items.find(liveDataItem => `GR2` === `${liveDataItem.Bezeichnung.trim()}${parseInt(liveDataItem.Kanal)}`);
+		
+			const isGassensor = (item.VCOItem.Bez.trim() === "GA");
+			const warngrenze = (isGassensor) ? VisuDownload.Items.find(liveDataItem => `GR2` === `${liveDataItem.Bezeichnung.trim()}${parseInt(liveDataItem.Kanal)}`) : undefined;
+			const stoergrenze = (isGassensor) ? VisuDownload.Items.find(liveDataItem => `GR3` === `${liveDataItem.Bezeichnung.trim()}${parseInt(liveDataItem.Kanal)}`) : undefined;
+			vDynCtx.fillStyle = (item.VCOItem.Bez.trim() === "KES") ? `#fc1803` :
+								(val > stoergrenze) ? `#fc1803`:
+								(val > warngrenze) ? `#fcdf03` :
+								(isGassensor) ? `#42f545` :
+						   		item.BgColor;
 
-				if (item.Symbol == "Absenkung") {
-					const val = parseFloat(svalue.trim());
-						Absenkung(vDynCtx, item.x, item.y, 1, val);
-				}
-
-				if (item.Symbol == "Feuer") {
-					const val = parseFloat(svalue.trim());
-					if (val)
-						feuer(vDynCtx, item.x, item.y, 1);
-				}
-
-				if (item.Symbol == "BHKW") {
-					const val = parseFloat(svalue.trim());
-					BHDreh(vDynCtx, item.x, item.y, 1, TimerCounter * 30 * val);
-				}
-
-				if (item.Symbol == "Pumpe") {
-					const val = parseFloat(svalue.trim());
-					pmpDreh2(vDynCtx, item.x, item.y, 1, TimerCounter * 30 * val);
-				}
-				
-				const rotation =    (item.SymbolFeature === "Rechts") ? 180 :
-									(item.SymbolFeature === "Oben") ? 90 :
-									(item.SymbolFeature === "Unten") ? 270 : 0;
-				if (item.Symbol == "Luefter") {
-					const val = parseFloat(svalue.trim());
-					const angle = (val) ? TimerCounter * 30 : 30;
-					luefter(vDynCtx, item.x, item.y, 1, angle, rotation);
-				}
-
-				if (item.Symbol === "Ventil") {
-					const val = parseFloat(svalue.trim());
-					if (val) {
-						ventil(vDynCtx, item.x, item.y, 2, rotation);
-					}
-				}
-				if (item.Symbol === "VentilFilled") {
-					const val = parseFloat(svalue.trim());
-					if (val) {
-						ventilFilled(vDynCtx, item.x, item.y, 1, rotation);
-					}
-				}
-
-				if (item.Symbol == "Lueftungsklappe" || item.Symbol == "Abluftklappen") {
-					let val = parseFloat(svalue.trim());
-					if (val == 1) val = 100;
-					lueftungsklappe(vDynCtx, item.x, item.y, 1, val, item.SymbolFeature);                            
-				}
-
-				if (item.Symbol == "Led") {
-					var b = (svalue.trim() == "1");
-
-					if (item.SymbolFeature == "unsichtbar/rot") {
-						if (b)
-							Led(vDynCtx, item.x, item.y, 1, "red");
-					}
-					if (item.SymbolFeature == "gruen/rot") {
-						if (!b)
-							Led(vDynCtx, item.x, item.y, 1, "green");
-						else
-							Led(vDynCtx, item.x, item.y, 1, "red");
-
-					}
-
-					if (item.SymbolFeature == "rot/gruen") {
-						if (!b)
-							Led(vDynCtx, item.x, item.y, 1, "red");
-						else
-							Led(vDynCtx, item.x, item.y, 1, "green");
-
-					}
-
-					if (item.SymbolFeature == "unsichtbar/rot blinkend") {
-						if (b) {
-							if (TimerToggle)
-								Led(vDynCtx, item.x, item.y, 1, "red");
-						}
-					}
-					if (item.SymbolFeature == "gruen/rot blinkend") {
-						if (!b)
-							Led(vDynCtx, item.x, item.y, 1, "green");
-						else {
-							if (TimerToggle)
-								Led(vDynCtx, item.x, item.y, 1, "red");
-						}
-					}
-				}
-
-				if (item.Symbol == "Schalter") {
-					const val = parseFloat(svalue.trim());
-					schalter(vDynCtx, item.x, item.y, 1, val, item.SymbolFeature);
-				}
-
-				
-
-				hasSymbolsFlag = true;
-			}
-			else {
-				var sz = document.getElementById("selSize");
-				vDynCtx.font = item.font;
-				var w = vDynCtx.measureText(txt).width;
-				vDynCtx.fillStyle = item.BgColor;
-				vDynCtx.fillRect(x - 1, y - item.BgHeight - 1, w + 2, item.BgHeight + 3);
-				vDynCtx.fillStyle = item.Color;
-				vDynCtx.fillText(txt, x, y);
-			}
+			const txt = `${svalue} ${item.VCOItem.sEinheit}`;
+			const txtWidth = vDynCtx.measureText(txt).width;
+			vDynCtx.fillRect(item.x - 1, item.y - item.BgHeight - 1, txtWidth + 2, item.BgHeight + 3);
+			
+			vDynCtx.font = item.font;
+			vDynCtx.fillStyle = item.Color;
+			vDynCtx.fillText(txt, item.x, item.y);
 		}
 	}
 }
